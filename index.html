@@ -809,14 +809,14 @@
                     newWrapper.className = 'mobile-chart-wrapper';
                     newWrapper.style.position = 'relative';
                     newWrapper.style.height = '350px';
-                    
+
                     const wideCharts = ['chart-rt-shopwar', 'chart-shopwar-battle', 'chart-micro-daily', 'chart-micro-cumulative', 'chart-gap-dow', 'chart-panic-index', 'chart-rev-demand', 'chart-pure-market'];
                     if (wideCharts.includes(canvasId)) {
                         newWrapper.style.width = '800px'; // fixed wide width to allow crisp horizontal scrolling
                     } else {
-                        newWrapper.style.width = '100%'; 
+                        newWrapper.style.width = '100%';
                     }
-                    
+
                     canvas.parentNode.insertBefore(newWrapper, canvas);
                     newWrapper.appendChild(canvas);
                 }
@@ -1132,10 +1132,10 @@
                     data: {
                         labels: battleLabels,
                         datasets: [
-                            { label: '🔥 Demand: Hashtags (#)', data: bDH, borderColor: '#D62828', borderWidth: 3, pointRadius: 5, tension: 0.2 },
-                            { label: '📦 Supply: Hashtags (#)', data: bSH, borderColor: '#F77F00', borderWidth: 2, borderDash: [6, 3], pointRadius: 4, pointStyle: 'rect', tension: 0.2 },
-                            { label: '🌊 Demand: Replayground', data: bDR, borderColor: '#003049', borderWidth: 3, pointRadius: 5, pointStyle: 'triangle', tension: 0.2 },
-                            { label: '📦 Supply: Replayground', data: bSR, borderColor: '#457B9D', borderWidth: 2, borderDash: [6, 3], pointRadius: 4, pointStyle: 'rectRot', tension: 0.2 },
+                            { label: '🔥 Demand: Hashtags (#)', data: bDH, borderColor: '#D62828', borderWidth: 3, pointRadius: 0, tension: 0.2 },
+                            { label: '📦 Supply: Hashtags (#)', data: bSH, borderColor: '#F77F00', borderWidth: 2, borderDash: [6, 3], pointRadius: 0, tension: 0.2 },
+                            { label: '🌊 Demand: Replayground', data: bDR, borderColor: '#003049', borderWidth: 3, pointRadius: 0, tension: 0.2 },
+                            { label: '📦 Supply: Replayground', data: bSR, borderColor: '#457B9D', borderWidth: 2, borderDash: [6, 3], pointRadius: 0, tension: 0.2 },
                         ]
                     },
                     options: {
