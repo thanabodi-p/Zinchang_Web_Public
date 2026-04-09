@@ -11,6 +11,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 
     <style>
         body {
@@ -1122,9 +1124,21 @@
             const sRepG = groupByCount(sBattle.filter(r => r.Supply_Shop === 'Replayground'), r => dateOnly(r.Supply_Table_Date));
 
             const allDates = [...new Set([...Object.keys(dHashG), ...Object.keys(sHashG), ...Object.keys(dRepG), ...Object.keys(sRepG)])].sort();
-            const battleLabels = allDates.map(formatDateShort);
-            const bDH = allDates.map(d => dHashG[d] || 0), bSH = allDates.map(d => sHashG[d] || 0);
-            const bDR = allDates.map(d => dRepG[d] || 0), bSR = allDates.map(d => sRepG[d] || 0);
+            
+            const continuousDates = [];
+            if (allDates.length > 0) {
+                let curr = new Date(allDates[0]);
+                const end = new Date(allDates[allDates.length - 1]);
+                while (curr <= end) {
+                    continuousDates.push(curr.toISOString().slice(0, 10));
+                    curr.setDate(curr.getDate() + 1);
+                }
+            }
+            
+            const battleLabels = continuousDates.map(formatDateShort);
+            const bDH = continuousDates.map(d => dHashG[d] || 0), bSH = continuousDates.map(d => sHashG[d] || 0);
+            const bDR = continuousDates.map(d => dRepG[d] || 0), bSR = continuousDates.map(d => sRepG[d] || 0);
+
 
             if (allDates.length > 0) {
                 createChart('chart-shopwar-battle', {
@@ -1140,7 +1154,14 @@
                     },
                     options: {
                         responsive: true,
-                        plugins: { title: { display: true, text: 'สงครามขั้วอำนาจ: การเติบโตของดีมานด์ (มีนาคม - เมษายน)', font: { size: 16, weight: 'bold', family: 'Sarabun' } }, legend: { position: 'bottom', labels: { font: { family: 'Sarabun' } } } },
+                        plugins: {
+                            title: { display: true, text: 'สงครามขั้วอำนาจ: การเติบโตของดีมานด์ (มีนาคม - เมษายน)', font: { size: 16, weight: 'bold', family: 'Sarabun' } },
+                            legend: { position: 'bottom', labels: { font: { family: 'Sarabun' } } },
+                            zoom: {
+                                zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' },
+                                pan: { enabled: true, mode: 'x' }
+                            }
+                        },
                         scales: { y: { title: { display: true, text: 'ปริมาณความต้องการ (Unique Posts)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
                     }
                 });
