@@ -221,17 +221,50 @@
 
             .bg-white {
                 padding: 8px !important;
+                overflow-x: auto; /* Allow horizontal scroll */
             }
-            
+
             .bg-white canvas {
                 min-height: 350px !important;
             }
 
-            body { font-size: 0.85rem; }
-            h3 { font-size: 1rem !important; margin-bottom: 0.25rem !important; }
-            h4 { font-size: 0.9rem !important; }
-            p.text-sm, p.text-xs { font-size: 0.75rem !important; margin-bottom: 0.5rem !important; }
-            .card-info, .card-success, .card-warning, .card-error { padding: 8px !important; }
+            /* Make detailed charts wide to prevent squishing */
+            canvas#chart-rt-shopwar,
+            canvas#chart-shopwar-battle,
+            canvas#chart-micro-daily,
+            canvas#chart-micro-cumulative,
+            canvas#chart-gap-dow,
+            canvas#chart-panic-index,
+            canvas#chart-rev-demand,
+            canvas#chart-pure-market {
+                min-width: 700px !important;
+            }
+
+            body {
+                font-size: 0.85rem;
+            }
+
+            h3 {
+                font-size: 1rem !important;
+                margin-bottom: 0.25rem !important;
+            }
+
+            h4 {
+                font-size: 0.9rem !important;
+            }
+
+            p.text-sm,
+            p.text-xs {
+                font-size: 0.75rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+
+            .card-info,
+            .card-success,
+            .card-warning,
+            .card-error {
+                padding: 8px !important;
+            }
 
             .grid-cols-1 {
                 grid-template-columns: 1fr !important;
@@ -776,7 +809,7 @@
             }
             const canvas = document.getElementById(canvasId);
             if (!canvas) return null;
-            
+
             // Force responsive behavior for mobile
             if (!config.options) config.options = {};
             if (config.options.maintainAspectRatio === undefined) {
