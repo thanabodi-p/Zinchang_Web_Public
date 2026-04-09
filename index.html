@@ -221,23 +221,8 @@
 
             .bg-white {
                 padding: 8px !important;
-                overflow-x: auto; /* Allow horizontal scroll */
-            }
-
-            .bg-white canvas {
-                min-height: 350px !important;
-            }
-
-            /* Make detailed charts wide to prevent squishing */
-            canvas#chart-rt-shopwar,
-            canvas#chart-shopwar-battle,
-            canvas#chart-micro-daily,
-            canvas#chart-micro-cumulative,
-            canvas#chart-gap-dow,
-            canvas#chart-panic-index,
-            canvas#chart-rev-demand,
-            canvas#chart-pure-market {
-                min-width: 700px !important;
+                overflow-x: auto;
+                /* Allow horizontal scroll */
             }
 
             body {
@@ -814,6 +799,27 @@
             if (!config.options) config.options = {};
             if (config.options.maintainAspectRatio === undefined) {
                 config.options.maintainAspectRatio = false;
+            }
+
+            // Fix for mobile stretching and scrolling: Enforce container dimensions natively
+            if (window.innerWidth <= 768) {
+                let wrapper = canvas.parentElement;
+                if (!wrapper.classList.contains('mobile-chart-wrapper')) {
+                    const newWrapper = document.createElement('div');
+                    newWrapper.className = 'mobile-chart-wrapper';
+                    newWrapper.style.position = 'relative';
+                    newWrapper.style.height = '350px';
+                    
+                    const wideCharts = ['chart-rt-shopwar', 'chart-shopwar-battle', 'chart-micro-daily', 'chart-micro-cumulative', 'chart-gap-dow', 'chart-panic-index', 'chart-rev-demand', 'chart-pure-market'];
+                    if (wideCharts.includes(canvasId)) {
+                        newWrapper.style.width = '800px'; // fixed wide width to allow crisp horizontal scrolling
+                    } else {
+                        newWrapper.style.width = '100%'; 
+                    }
+                    
+                    canvas.parentNode.insertBefore(newWrapper, canvas);
+                    newWrapper.appendChild(canvas);
+                }
             }
 
             const ctx = canvas.getContext('2d');
