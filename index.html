@@ -1085,7 +1085,7 @@
                         legend: { position: 'top', labels: { font: { family: 'Sarabun' } } }
                     },
                     scales: {
-                        x: { title: { display: true, text: 'ชั่วโมง (0 = เที่ยงคืน)' } },
+                        x: { title: { display: true, text: 'ชั่วโมง (0 = เที่ยงคืน)' }, ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } },
                         y: { title: { display: true, text: 'จำนวนคน (Unique Users/Hour)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }
                     }
                 }
@@ -1141,7 +1141,7 @@
                     options: {
                         responsive: true,
                         plugins: { title: { display: true, text: 'สงครามขั้วอำนาจ: การเติบโตของดีมานด์ (มีนาคม - เมษายน)', font: { size: 16, weight: 'bold', family: 'Sarabun' } }, legend: { position: 'bottom', labels: { font: { family: 'Sarabun' } } } },
-                        scales: { y: { title: { display: true, text: 'ปริมาณความต้องการ (Unique Posts)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45 } } }
+                        scales: { y: { title: { display: true, text: 'ปริมาณความต้องการ (Unique Posts)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
                     }
                 });
 
@@ -1253,7 +1253,7 @@
                 options: {
                     responsive: true,
                     plugins: { title: { display: true, text: `ความร้อนแรงของโต๊ะวันที่ ${formatDateFull(selectedDate)} (แยกตามวันที่คนโพสต์)`, font: { size: 15, weight: 'bold', family: 'Sarabun' } } },
-                    scales: { y: { title: { display: true, text: 'จำนวนโต๊ะที่โพสต์ในวันนั้น' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } }
+                    scales: { y: { title: { display: true, text: 'จำนวนโต๊ะที่โพสต์ในวันนั้น' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
                 }
             });
 
@@ -1270,7 +1270,7 @@
                 options: {
                     responsive: true,
                     plugins: { title: { display: true, text: 'สต็อกคงค้างสะสมในระบบ (Cumulative)', font: { size: 13, weight: 'bold', family: 'Sarabun' } } },
-                    scales: { y: { title: { display: true, text: 'ยอดสะสมรวม' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } }
+                    scales: { y: { title: { display: true, text: 'ยอดสะสมรวม' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
                 }
             });
 
@@ -1672,7 +1672,7 @@
                         tooltip: { callbacks: { afterLabel: ctx => ctx.datasetIndex === 0 ? `⚑ Gap Score: ${gapScore[ctx.dataIndex]?.toFixed(2)}` : '' } }
                     },
                     scales: {
-                        x: { title: { display: true, text: 'ชั่วโมง (0 = เที่ยงคืน)' } },
+                        x: { title: { display: true, text: 'ชั่วโมง (0 = เที่ยงคืน)' }, ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } },
                         y: { title: { display: true, text: 'จำนวนคนจริงๆ (Unique Persons)' }, beginAtZero: true }
                     }
                 },
@@ -1710,7 +1710,7 @@
                         annotation: { annotations: { baseline: { type: 'line', yMin: 1.5, yMax: 1.5, borderColor: 'gray', borderDash: [6, 3], borderWidth: 1, label: { display: true, content: 'Baseline' } } } }
                     },
                     scales: {
-                        x: { title: { display: true, text: 'ชั่วโมง (0 = เที่ยงคืน)' } },
+                        x: { title: { display: true, text: 'ชั่วโมง (0 = เที่ยงคืน)' }, ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } },
                         y: { title: { display: true, text: 'โพสต์ต่อคน (Posts per Person)' }, beginAtZero: true }
                     }
                 },
@@ -1812,7 +1812,7 @@
                         legend: { title: { display: true, text: 'ร้านเป้าหมาย' } }
                     },
                     scales: {
-                        x: { title: { display: true, text: 'เป้าหมาย: วันที่อยากได้โต๊ะ' }, stacked: false },
+                        x: { title: { display: true, text: 'เป้าหมาย: วันที่อยากได้โต๊ะ' }, stacked: false, ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } },
                         y: { title: { display: true, text: 'จำนวนคนหา (คน)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }
                     }
                 }
