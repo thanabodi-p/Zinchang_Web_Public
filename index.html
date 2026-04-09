@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zinchang Command Center 📈</title>
+    <title>Zinchang Command Center </title>
     <meta name="description" content="Zinchang Command Center - ระบบวิเคราะห์ตลาดโต๊ะผี ขอนแก่น">
 
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
             border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .tab-btn { cursor: pointer; transition: all 0.2s; }
+        .tab-btn { cursor: pointer; transition: all 0.2s; white-space: nowrap; }
         .tab-btn.active { border-color: #2563eb; color: #2563eb; font-weight: 700; }
         .tab-btn:not(.active) { border-color: transparent; color: #6b7280; }
         .tab-btn:not(.active):hover { color: #3b82f6; }
@@ -43,9 +43,53 @@
         details summary:hover { color: #2563eb; }
         .chart-container { position: relative; width: 100%; }
         select { -webkit-appearance: auto; }
+
+        /* === MOBILE RESPONSIVE === */
+        /* Hamburger button */
+        #hamburger-btn { display: none; position: fixed; top: 12px; left: 12px; z-index: 50; background: #1f2937; color: white; border: none; border-radius: 8px; width: 44px; height: 44px; font-size: 22px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        /* Sidebar overlay */
+        #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 18; }
+        /* Scrollable tab bar */
+        .tab-bar-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .tab-bar-scroll::-webkit-scrollbar { display: none; }
+
+        @media (max-width: 768px) {
+            #hamburger-btn { display: flex; align-items: center; justify-content: center; }
+            .sidebar { position: fixed !important; left: 0; top: 0; height: 100%; transform: translateX(-100%); z-index: 30; }
+            .sidebar.open { transform: translateX(0); }
+            #sidebar-overlay.open { display: block; }
+            main { padding: 16px !important; padding-top: 60px !important; }
+            .page-title { font-size: 1.25rem !important; }
+            .bg-white { padding: 12px !important; }
+            .grid-cols-1 { grid-template-columns: 1fr !important; }
+        }
+
+        /* Tracker timeline custom styles */
+        .tracker-row { display: flex; align-items: center; border-bottom: 1px solid #e5e7eb; padding: 8px 0; min-height: 50px; }
+        .tracker-name { width: 120px; min-width: 120px; font-size: 13px; font-weight: 600; padding-right: 8px; word-break: break-all; }
+        .tracker-timeline { flex: 1; position: relative; height: 40px; overflow-x: auto; }
+        .tracker-dot { position: absolute; transform: translateX(-50%); cursor: pointer; }
+        .tracker-dot-normal { width: 10px; height: 10px; border-radius: 50%; background: #457B9D; top: 15px; }
+        .tracker-dot-sold { width: 18px; height: 18px; top: 11px; color: #D62828; font-size: 18px; line-height: 18px; text-align: center; }
+        .tracker-dot-latest { width: 14px; height: 14px; border-radius: 50%; background: #2A9D8F; border: 2px solid #000; top: 13px; }
+        .tracker-tooltip { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; white-space: nowrap; display: none; z-index: 10; }
+        .tracker-dot:hover .tracker-tooltip { display: block; }
+        .tracker-name-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+        .badge-gold { background: rgba(255,215,0,0.5); }
+        .badge-red { background: rgba(255,153,153,0.6); }
+        .badge-blue { background: rgba(153,204,255,0.6); }
+
+        @media (max-width: 768px) {
+            .tracker-name { width: 80px; min-width: 80px; font-size: 11px; }
+        }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-gray-800">
+
+    <!-- Hamburger Button (mobile only) -->
+    <button id="hamburger-btn" onclick="toggleSidebar()" aria-label="เมนู">☰</button>
+    <!-- Sidebar Overlay (mobile only) -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
     <!-- Loading Screen -->
     <div id="loading-screen">
@@ -100,23 +144,23 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-full overflow-y-auto bg-gray-100 p-6">
+    <main class="flex-1 flex flex-col h-full overflow-y-auto bg-gray-100 p-4 md:p-6">
 
         <!-- ============================================================ -->
         <!-- PAGE 1: สงกรานต์ War Room -->
         <!-- ============================================================ -->
         <div id="page-warroom" class="page-content">
-            <h2 class="text-3xl font-bold mb-1">🎯 ZINCHANG SONGKRAN WAR ROOM</h2>
-            <p class="text-gray-500 mb-6">ระบบแกะรอยคู่แข่งและเจาะลึกสมรภูมิวันไหลสงกรานต์</p>
+            <h2 class="text-xl md:text-3xl font-bold mb-1 page-title">🎯 ZINCHANG SONGKRAN WAR ROOM</h2>
+            <p class="text-gray-500 text-sm md:text-base mb-4 md:mb-6">ระบบแกะรอยคู่แข่งและเจาะลึกสมรภูมิวันไหลสงกรานต์</p>
 
             <!-- War Room Tabs -->
-            <div class="flex flex-wrap gap-1 border-b mb-6">
-                <button class="tab-btn active px-4 py-2 border-b-4 text-sm" data-tabgroup="wr" data-tab="wr-tab6">เรียลไทม์</button>
-                <button class="tab-btn px-4 py-2 border-b-4 text-sm" data-tabgroup="wr" data-tab="wr-tab1">ภาพรวมตลาด (Macro)</button>
-                <button class="tab-btn px-4 py-2 border-b-4 text-sm" data-tabgroup="wr" data-tab="wr-tab2">⏳ เจาะลึกรายวัน (Micro-Trend)</button>
-                <button class="tab-btn px-4 py-2 border-b-4 text-sm" data-tabgroup="wr" data-tab="wr-tab3">แกะรอยคู่แข่ง (Tracker)</button>
-                <button class="tab-btn px-4 py-2 border-b-4 text-sm" data-tabgroup="wr" data-tab="wr-tab4">Hourly Scarcity</button>
-                <button class="tab-btn px-4 py-2 border-b-4 text-sm" data-tabgroup="wr" data-tab="wr-tab5">เจาะลึกดีมานด์รายวัน</button>
+            <div class="tab-bar-scroll flex gap-1 border-b mb-4 md:mb-6 pb-0">
+                <button class="tab-btn active px-3 md:px-4 py-2 border-b-4 text-xs md:text-sm" data-tabgroup="wr" data-tab="wr-tab6">เรียลไทม์</button>
+                <button class="tab-btn px-3 md:px-4 py-2 border-b-4 text-xs md:text-sm" data-tabgroup="wr" data-tab="wr-tab1">Macro</button>
+                <button class="tab-btn px-3 md:px-4 py-2 border-b-4 text-xs md:text-sm" data-tabgroup="wr" data-tab="wr-tab2">Micro-Trend</button>
+                <button class="tab-btn px-3 md:px-4 py-2 border-b-4 text-xs md:text-sm" data-tabgroup="wr" data-tab="wr-tab3">Tracker</button>
+                <button class="tab-btn px-3 md:px-4 py-2 border-b-4 text-xs md:text-sm" data-tabgroup="wr" data-tab="wr-tab4">Scarcity</button>
+                <button class="tab-btn px-3 md:px-4 py-2 border-b-4 text-xs md:text-sm" data-tabgroup="wr" data-tab="wr-tab5">ดีมานด์รายวัน</button>
             </div>
 
             <!-- TAB 6: เรียลไทม์ -->
@@ -173,21 +217,28 @@
 
             <!-- TAB 3: Tracker -->
             <div id="wr-tab3" class="tab-panel hidden">
-                <h3 class="text-xl font-bold mb-2">🕵️ แกะรอยความเร็วในการขายของคู่แข่ง (อัปเดตระดับนาที)</h3>
-                <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                    <div class="chart-container" style="min-height:400px;">
-                        <canvas id="chart-tracker"></canvas>
-                    </div>
+                <h3 class="text-lg md:text-xl font-bold mb-2">🕵️ แกะรอยความเร็วในการขายของคู่แข่ง</h3>
+                <!-- Legend -->
+                <div class="flex flex-wrap gap-3 text-xs mb-3 text-gray-500">
+                    <span>⭐ = ปล่อยโต๊ะได้</span>
+                    <span><span class="inline-block w-3 h-3 rounded-full bg-[#2A9D8F] border border-black align-middle"></span> = สต็อกล่าสุด</span>
+                    <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-[#457B9D] align-middle"></span> = สต็อก</span>
+                    <span class="badge-gold tracker-name-badge">= Top 5</span>
+                    <span class="badge-blue tracker-name-badge">= ม้ามืด</span>
+                    <span class="badge-red tracker-name-badge">= ขายไม่ออก</span>
+                </div>
+                <div class="bg-white p-3 md:p-6 rounded-lg shadow-md mb-6 overflow-x-auto">
+                    <div id="tracker-timeline-container" style="min-width: 600px;"></div>
                 </div>
                 <div id="tracker-fake-alert" class="mb-4"></div>
-                <h4 class="text-lg font-bold mb-3">สรุปความเคลื่อนไหวและประสิทธิภาพคู่แข่ง (Competitor Leaderboard)</h4>
-                <div id="tracker-leaderboard" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"></div>
+                <h4 class="text-base md:text-lg font-bold mb-3">สรุปความเคลื่อนไหว (Leaderboard)</h4>
+                <div id="tracker-leaderboard" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"></div>
                 <hr class="my-4">
-                <h4 class="text-lg font-bold mb-3">การจัดระดับความแข็งแกร่ง (Seller Classification)</h4>
-                <p class="text-gray-500 text-sm mb-3">วิเคราะห์จาก ปริมาณยอดขาย เทียบกับ อัตราความพยายามในการโพสต์ (Effort Ratio) เพื่อประเมินประสิทธิภาพที่แท้จริง</p>
+                <h4 class="text-base md:text-lg font-bold mb-3">ระดับความแข็งแกร่ง (Classification)</h4>
+                <p class="text-gray-500 text-xs md:text-sm mb-3">วิเคราะห์จาก ปริมาณยอดขาย เทียบกับ อัตราความพยายามในการโพสต์ (Effort Ratio)</p>
                 <div id="tracker-classification" class="overflow-x-auto mb-6"></div>
                 <details class="bg-gray-50 p-4 rounded-lg border">
-                    <summary class="font-semibold">🛠️ DEBUG MODE: แกะรอย Timeline ของ Zinchang (คลิกเพื่อดู)</summary>
+                    <summary class="font-semibold text-sm">🛠️ DEBUG: Timeline ของ Zinchang</summary>
                     <p class="text-sm text-gray-500 mt-2 mb-3">ตารางด้านล่างนี้แสดงให้เห็นว่า <b>'ในแต่ละช่วงเวลา ระบบมองเห็นสต็อกของคุณต้นมีอะไรบ้าง'</b></p>
                     <div id="tracker-debug"></div>
                 </details>
@@ -233,14 +284,14 @@
         <!-- PAGE 2: ภาพรวมตลาดทั้งหมด (All-Time EDA) -->
         <!-- ============================================================ -->
         <div id="page-eda" class="page-content hidden">
-            <h2 class="text-3xl font-bold mb-1">📊 ZINCHANG MARKET EQUILIBRIUM EDA</h2>
-            <p class="text-gray-500 mb-6">วิเคราะห์ภาพรวมตลาดโต๊ะผี ขอนแก่น (Advanced Demand-Supply Collision Analysis)</p>
+            <h2 class="text-xl md:text-3xl font-bold mb-1 page-title">📊 ZINCHANG MARKET EQUILIBRIUM EDA</h2>
+            <p class="text-gray-500 text-sm md:text-base mb-4 md:mb-6">วิเคราะห์ภาพรวมตลาดโต๊ะผี ขอนแก่น</p>
 
             <!-- EDA Tabs -->
-            <div class="flex flex-wrap gap-1 border-b mb-6">
-                <button class="tab-btn active px-4 py-2 border-b-4 text-sm" data-tabgroup="eda" data-tab="eda-monthly">📅 Monthly Masterplan</button>
-                <button class="tab-btn px-4 py-2 border-b-4 text-sm" data-tabgroup="eda" data-tab="eda-gap">📊 Gap by Date</button>
-                <button class="tab-btn px-4 py-2 border-b-4 text-sm" data-tabgroup="eda" data-tab="eda-desperation">🔥 Desperation Shift</button>
+            <div class="tab-bar-scroll flex gap-1 border-b mb-4 md:mb-6 pb-0">
+                <button class="tab-btn active px-3 md:px-4 py-2 border-b-4 text-xs md:text-sm" data-tabgroup="eda" data-tab="eda-monthly">📅 Monthly</button>
+                <button class="tab-btn px-3 md:px-4 py-2 border-b-4 text-xs md:text-sm" data-tabgroup="eda" data-tab="eda-gap">📊 Gap by Date</button>
+                <button class="tab-btn px-3 md:px-4 py-2 border-b-4 text-xs md:text-sm" data-tabgroup="eda" data-tab="eda-desperation">🔥 Desperation</button>
             </div>
 
             <!-- EDA Monthly -->
@@ -440,6 +491,13 @@ const renderedTabs = new Set();
 // ============================================================================
 // 🖱️ UI INTERACTION HANDLERS
 // ============================================================================
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+}
+
 function switchPage(pageId) {
     document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
     document.getElementById(pageId).classList.remove('hidden');
@@ -451,6 +509,13 @@ function switchPage(pageId) {
         document.getElementById('nav-eda').classList.add('active');
         document.getElementById('eda-filters-sidebar').classList.remove('hidden');
         if (!renderedTabs.has('eda-monthly')) renderEdaCharts();
+    }
+    // Close sidebar on mobile after navigation
+    if (window.innerWidth <= 768) {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
     }
 }
 
@@ -1027,59 +1092,75 @@ function renderTab3() {
     const top1 = sellerStats[0]?.seller;
     const top5Darkhorse = sellerStats.filter(r=>r.sold>0 && r.seller!==top1).sort((a,b)=>a.effortRatio-b.effortRatio).slice(0,5).map(r=>r.seller);
 
-    // Build chart data: scatter with seller indices
+    // ====== BUILD CUSTOM HTML TIMELINE (replaces broken scatter chart) ======
     const uniqueSellers = [...new Set(filteredPlotData.map(r => r.seller))];
-    const sellerIndexMap = {};
-    uniqueSellers.forEach((s,i) => { sellerIndexMap[s] = i; });
 
-    const normalPoints = [], soldPoints = [], latestPoints = [];
-    filteredPlotData.forEach(r => {
-        const y = sellerIndexMap[r.seller];
-        const x = r.postDate.getTime();
-        const tooltip = r.soldItems.size > 0 ? `Sold: ${formatCompactDatesWithShop(r.soldItems)}` :
-                        r.isLatest ? `เหลือ ${r.inventoryCount} โต๊ะ` :
-                        `สต็อก ${r.inventoryCount} โต๊ะ`;
-        const point = { x, y, tooltip, seller: r.seller };
-        if (r.soldItems.size > 0) soldPoints.push(point);
-        else if (r.isLatest) latestPoints.push(point);
-        else normalPoints.push(point);
-    });
+    // Find global time range
+    const allTimes = filteredPlotData.map(r => r.postDate.getTime());
+    const minTime = Math.min(...allTimes);
+    const maxTime = Math.max(...allTimes);
+    const timeRange = maxTime - minTime || 1;
 
-    // Line datasets (one per seller, connecting dots)
-    const lineDatasets = uniqueSellers.map((seller, idx) => {
-        const pts = filteredPlotData.filter(r => r.seller === seller).sort((a,b) => a.postDate - b.postDate).map(r => ({ x: r.postDate.getTime(), y: idx }));
-        return { data: pts, borderColor: 'rgba(150,150,150,0.3)', borderDash: [4,4], pointRadius: 0, showLine: true, borderWidth: 1, fill: false, label: '' };
-    });
+    const container = document.getElementById('tracker-timeline-container');
+    let html = '';
 
-    createChart('chart-tracker', {
-        type: 'scatter',
-        data: {
-            datasets: [
-                ...lineDatasets,
-                { label: '📦 สต็อก', data: normalPoints, backgroundColor: '#457B9D', pointRadius: 5, pointStyle: 'circle', showLine: false },
-                { label: '⭐ ปล่อยโต๊ะได้!', data: soldPoints, backgroundColor: '#D62828', pointRadius: 9, pointStyle: 'star', showLine: false },
-                { label: '🟢 สต็อกล่าสุด', data: latestPoints, backgroundColor: '#2A9D8F', borderColor: '#000', borderWidth: 1, pointRadius: 7, pointStyle: 'circle', showLine: false },
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'top', labels: { filter: item => item.text !== '', font: { family: 'Sarabun' }}},
-                tooltip: { callbacks: { label: ctx => ctx.raw?.tooltip || '', title: ctx => ctx[0]?.raw?.seller || '' }}
-            },
-            scales: {
-                x: {
-                    type: 'linear', title: { display: true, text: 'เวลาที่โพสต์' },
-                    ticks: { callback: v => { const d = new Date(v); return `${String(d.getDate()).padStart(2,'0')} ${MONTHS_SHORT[d.getMonth()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }, maxRotation: 30 }
-                },
-                y: {
-                    type: 'linear', title: { display: false },
-                    ticks: { callback: v => uniqueSellers[v] || '', stepSize: 1, font: { weight: v => { const s = uniqueSellers[v.tick?.value]; return top5Sellers.includes(s) ? 'bold' : 'normal'; }}},
-                    min: -0.5, max: uniqueSellers.length - 0.5
-                }
-            }
+    // Header row with time labels
+    html += '<div class="tracker-row" style="border-bottom:2px solid #ccc;">';
+    html += '<div class="tracker-name text-xs text-gray-400">ชื่อแม่ค้า</div>';
+    html += '<div class="tracker-timeline" style="display:flex; justify-content:space-between; align-items:center; height:20px;">';
+    const timeSteps = 5;
+    for (let i = 0; i <= timeSteps; i++) {
+        const t = new Date(minTime + (timeRange * i / timeSteps));
+        const label = `${String(t.getDate()).padStart(2,'0')} ${MONTHS_SHORT[t.getMonth()]} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+        html += `<span class="text-[10px] text-gray-400">${label}</span>`;
+    }
+    html += '</div></div>';
+
+    // One row per seller
+    uniqueSellers.forEach(seller => {
+        const sellerData = filteredPlotData.filter(r => r.seller === seller).sort((a,b) => a.postDate - b.postDate);
+        
+        // Determine badge class
+        let badgeClass = '';
+        if (top5Sellers.includes(seller)) badgeClass = 'badge-gold';
+        else if (top5Darkhorse.includes(seller)) badgeClass = 'badge-blue';
+        else if (top5Worst.includes(seller)) badgeClass = 'badge-red';
+
+        html += '<div class="tracker-row">';
+        html += `<div class="tracker-name"><span class="tracker-name-badge ${badgeClass}">${seller}</span></div>`;
+        html += '<div class="tracker-timeline" style="position:relative;">';
+
+        // Draw connecting line via SVG
+        if (sellerData.length > 1) {
+            const pts = sellerData.map(r => {
+                const pct = ((r.postDate.getTime() - minTime) / timeRange) * 100;
+                return `${pct}%`;
+            });
+            // Use a thin line element
+            const firstPct = ((sellerData[0].postDate.getTime() - minTime) / timeRange) * 100;
+            const lastPct = ((sellerData[sellerData.length-1].postDate.getTime() - minTime) / timeRange) * 100;
+            html += `<div style="position:absolute;top:19px;left:${firstPct}%;width:${lastPct-firstPct}%;height:2px;background:repeating-linear-gradient(90deg,#ccc 0,#ccc 4px,transparent 4px,transparent 8px);"></div>`;
         }
+
+        // Draw dots
+        sellerData.forEach(r => {
+            const pct = ((r.postDate.getTime() - minTime) / timeRange) * 100;
+            const timeStr = `${String(r.postDate.getDate()).padStart(2,'0')} ${MONTHS_SHORT[r.postDate.getMonth()]} ${String(r.postDate.getHours()).padStart(2,'0')}:${String(r.postDate.getMinutes()).padStart(2,'0')}`;
+
+            if (r.soldItems.size > 0) {
+                const soldStr = formatCompactDatesWithShop(r.soldItems);
+                html += `<div class="tracker-dot tracker-dot-sold" style="left:${pct}%;">⭐<div class="tracker-tooltip">Sold: ${soldStr}<br>${timeStr}</div></div>`;
+            } else if (r.isLatest) {
+                html += `<div class="tracker-dot tracker-dot-latest" style="left:${pct}%;"><div class="tracker-tooltip">เหลือ ${r.inventoryCount} โต๊ะ<br>${timeStr}</div></div>`;
+            } else {
+                html += `<div class="tracker-dot tracker-dot-normal" style="left:${pct}%;"><div class="tracker-tooltip">สต็อก ${r.inventoryCount} โต๊ะ<br>${timeStr}</div></div>`;
+            }
+        });
+
+        html += '</div></div>'; // close timeline + row
     });
+
+    container.innerHTML = html;
 
     // Fake sellers alert
     const fakeEntries = Object.entries(fakeSellers);
