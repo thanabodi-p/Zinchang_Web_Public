@@ -1457,7 +1457,20 @@
                 const allSold = new Set();
                 grp.forEach(r => { if (r.soldItems.size > 0) { totalSold += r.soldItems.size; r.soldItems.forEach(item => allSold.add(item)); } });
                 const latestRow = grp.find(r => r.isLatest) || grp[grp.length - 1];
-                const remaining = latestRow.currentInventory;
+                const rawRemaining = latestRow.currentInventory;
+
+                // 🧠 Smart Supply Expiry: ถ้าวันที่ของโต๊ะเลยวันปัจจุบันไปแล้ว = ถูกปล่อยไปแล้วอัตโนมัติ
+                const todayExpiry = new Date().toISOString().slice(0, 10);
+                const remaining = new Set();
+                rawRemaining.forEach(item => {
+                    const datePart = item.split('|')[0]; // e.g. "2026-04-09"
+                    if (datePart >= todayExpiry) {
+                        remaining.add(item); // ยังไม่ถึงวัน = ยังเหลือจริง
+                    } else {
+                        allSold.add(item); // เลยวันแล้ว = นับว่าปล่อยไปแล้ว
+                        totalSold++;
+                    }
+                });
                 const totalPosts = grp.length;
                 const effortRatio = totalSold > 0 ? totalPosts / totalSold : totalPosts;
                 sellerStats.push({ seller, sold: totalSold, allSold, remaining, totalPosts, effortRatio });
