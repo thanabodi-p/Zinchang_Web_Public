@@ -974,6 +974,19 @@
             // Filter สงกรานต์ + Days_Advance >= 0
             demandFest = dfDFest.filter(r => r.festival === 'สงกรานต์' && r.Days_Advance >= 0);
             supplyFest = dfSFest.filter(r => r.festival === 'สงกรานต์' && r.Days_Advance >= 0);
+
+            // 🧠 Smart Supply Expiry: ถ้า Supply_Table_Date เลยวันปัจจุบันไปแล้ว
+            // แปลว่าโต๊ะนั้นถูกปล่อยออกไปแล้ว ไม่ควรนับเป็นของที่มีในมืออีกต่อไป
+            const todayStr = new Date().toISOString().slice(0, 10); // e.g. "2026-04-12"
+            supplyFest = supplyFest.filter(r => {
+                const tableDate = dateOnly(r.Supply_Table_Date);
+                return tableDate >= todayStr; // เก็บเฉพาะโต๊ะที่ยังไม่ถึงวัน หรือวันนี้
+            });
+            supplyHaveDedupGlobal = supplyHaveDedupGlobal.filter(r => {
+                const tableDate = dateOnly(r.Supply_Table_Date);
+                return tableDate >= todayStr;
+            });
+            console.log(`🧠 Smart Supply Expiry: วันนี้ = ${todayStr}, Supply ที่ยังเหลือ = ${supplyFest.length} รายการ`);
         }
 
         // ============================================================================
