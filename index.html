@@ -797,10 +797,10 @@
             const canvas = document.getElementById(canvasId);
             if (!canvas) return null;
 
-            // Force responsive behavior for mobile
+            // Force responsive behavior - different for mobile vs desktop
             if (!config.options) config.options = {};
             if (config.options.maintainAspectRatio === undefined) {
-                config.options.maintainAspectRatio = false;
+                config.options.maintainAspectRatio = window.innerWidth > 768; // true on desktop, false on mobile
             }
 
             // Fix for mobile stretching and scrolling: Enforce container dimensions natively
@@ -1124,7 +1124,7 @@
             const sRepG = groupByCount(sBattle.filter(r => r.Supply_Shop === 'Replayground'), r => dateOnly(r.Supply_Table_Date));
 
             const allDates = [...new Set([...Object.keys(dHashG), ...Object.keys(sHashG), ...Object.keys(dRepG), ...Object.keys(sRepG)])].sort();
-            
+
             const continuousDates = [];
             let curr = new Date('2026-03-01');
             const end = new Date('2026-04-19');
@@ -1135,7 +1135,7 @@
                 continuousDates.push(`${yyyy}-${mm}-${dd}`);
                 curr.setDate(curr.getDate() + 1);
             }
-            
+
             const battleLabels = continuousDates.map(formatDateShort);
             const bDH = continuousDates.map(d => dHashG[d] || 0), bSH = continuousDates.map(d => sHashG[d] || 0);
             const bDR = continuousDates.map(d => dRepG[d] || 0), bSR = continuousDates.map(d => sRepG[d] || 0);
