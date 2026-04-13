@@ -645,6 +645,9 @@
         // ============================================================================
         // 🎨 CONSTANTS & COLOR PALETTE
         // ============================================================================
+        // ============================================================================
+        // 🎨 CONSTANTS & COLOR PALETTE
+        // ============================================================================
         const C_DEMAND = "#B03A2E";
         const C_SUPPLY = "#1E8449";
         const C_WALKIN = "#B7950B";
@@ -690,7 +693,6 @@
             return String(dateStr).substring(0, 10);
         }
 
-        // drop_duplicates equivalent: keep='first' or 'last'
         function deduplicate(arr, keys, keep = 'first') {
             const seen = new Map();
             const items = keep === 'last' ? [...arr].reverse() : arr;
@@ -702,7 +704,6 @@
             return keep === 'last' ? result.reverse() : result;
         }
 
-        // groupBy → { key: [rows] }
         function groupBy(arr, keyFn) {
             return arr.reduce((acc, row) => {
                 const key = typeof keyFn === 'function' ? keyFn(row) : row[keyFn];
@@ -713,7 +714,6 @@
             }, {});
         }
 
-        // groupBy → count
         function groupByCount(arr, keyFn) {
             const groups = groupBy(arr, keyFn);
             const result = {};
@@ -721,7 +721,6 @@
             return result;
         }
 
-        // groupBy → sum of a numeric field
         function groupBySum(arr, keyFn, valFn) {
             const groups = groupBy(arr, keyFn);
             const result = {};
@@ -731,56 +730,44 @@
             return result;
         }
 
-        // groupBy → nunique of a field
-        function groupByNunique(arr, keyFn, uniqueField) {
-            const groups = groupBy(arr, keyFn);
-            const result = {};
-            for (const [k, v] of Object.entries(groups)) {
-                result[k] = new Set(v.map(r => r[uniqueField])).size;
-            }
-            return result;
-        }
-
-        // value_counts (normalize=false)
-        function valueCounts(arr, field) {
-            return arr.reduce((acc, r) => { const v = r[field]; if (v != null) acc[v] = (acc[v] || 0) + 1; return acc; }, {});
-        }
-
-        // reindex to full range, fill with 0
         function reindex(obj, keys, fillValue = 0) {
             const result = {};
             for (const k of keys) result[k] = obj[k] ?? fillValue;
             return result;
         }
 
-        // cumulative sum of array
         function cumSum(arr) {
             let s = 0;
             return arr.map(v => (s += v, s));
         }
 
-        // Format compact dates with shop (replicating Python function)
+        // 🌟 [อัปเกรด] จัดรูปแบบแสดงผลโต๊ะ ให้รวมกลุ่มจำนวนได้สวยงาม เช่น "7(x3), 9 เม.ย.(#)"
         function formatCompactDatesWithShop(datesShopSet) {
             if (!datesShopSet || datesShopSet.size === 0) return "";
             const datesList = [...datesShopSet].sort();
             const grouped = {};
             for (const item of datesList) {
-                const sepIdx = item.lastIndexOf('|');
-                if (sepIdx === -1) continue;
-                const d = item.substring(0, sepIdx);
-                const shop = item.substring(sepIdx + 1);
-                const parts = d.split('-');
-                if (parts.length < 3) continue;
-                const m = parts[1], day = String(parseInt(parts[2]));
+                const parts = item.split('|');
+                if (parts.length < 2) continue;
+                const d = parts[0];
+                const shop = parts[1];
+                // parts[2] คือ index (โต๊ะที่ 1, โต๊ะที่ 2)
+                const dParts = d.split('-');
+                if (dParts.length < 3) continue;
+                const m = dParts[1], day = String(parseInt(dParts[2]));
                 const key = `${m}|${shop}`;
-                if (!grouped[key]) grouped[key] = [];
-                grouped[key].push(day);
+                if (!grouped[key]) grouped[key] = {};
+                if (!grouped[key][day]) grouped[key][day] = 0;
+                grouped[key][day]++; // นับจำนวนโต๊ะในวันนั้น
             }
             const result = [];
-            for (const [key, days] of Object.entries(grouped)) {
+            for (const [key, daysObj] of Object.entries(grouped)) {
                 const [m, shop] = [key.substring(0, 2), key.substring(3)];
                 const mStr = THAI_M_DICT[m] || m;
-                result.push(`${days.join(', ')} ${mStr}${shop}`);
+                const dayStrings = Object.entries(daysObj)
+                    .sort((a,b) => Number(a[0]) - Number(b[0]))
+                    .map(([day, count]) => count > 1 ? `${day}(x${count})` : day);
+                result.push(`${dayStrings.join(', ')} ${mStr}${shop}`);
             }
             return result.join(", ");
         }
@@ -797,13 +784,11 @@
             const canvas = document.getElementById(canvasId);
             if (!canvas) return null;
 
-            // Force responsive behavior - different for mobile vs desktop
             if (!config.options) config.options = {};
             if (config.options.maintainAspectRatio === undefined) {
-                config.options.maintainAspectRatio = window.innerWidth > 768; // true on desktop, false on mobile
+                config.options.maintainAspectRatio = window.innerWidth > 768; 
             }
 
-            // Fix for mobile stretching and scrolling: Enforce container dimensions natively
             if (window.innerWidth <= 768) {
                 let wrapper = canvas.parentElement;
                 if (!wrapper.classList.contains('mobile-chart-wrapper')) {
@@ -814,7 +799,7 @@
 
                     const wideCharts = ['chart-rt-shopwar', 'chart-shopwar-battle', 'chart-micro-daily', 'chart-micro-cumulative', 'chart-gap-dow', 'chart-panic-index', 'chart-rev-demand', 'chart-pure-market'];
                     if (wideCharts.includes(canvasId)) {
-                        newWrapper.style.width = '800px'; // fixed wide width to allow crisp horizontal scrolling
+                        newWrapper.style.width = '800px'; 
                     } else {
                         newWrapper.style.width = '100%';
                     }
@@ -829,7 +814,6 @@
             return chartInstances[canvasId];
         }
 
-        // Track which tabs have been rendered
         const renderedTabs = new Set();
 
         // ============================================================================
@@ -854,7 +838,6 @@
                 document.getElementById('eda-filters-sidebar').classList.remove('hidden');
                 if (!renderedTabs.has('eda-monthly')) renderEdaCharts();
             }
-            // Close sidebar on mobile after navigation
             if (window.innerWidth <= 768) {
                 const sidebar = document.querySelector('.sidebar');
                 const overlay = document.getElementById('sidebar-overlay');
@@ -864,17 +847,14 @@
         }
 
         function switchTab(tabGroup, tabId) {
-            // Update buttons
             document.querySelectorAll(`.tab-btn[data-tabgroup="${tabGroup}"]`).forEach(b => {
                 b.classList.toggle('active', b.dataset.tab === tabId);
             });
-            // Update panels
             const parent = document.getElementById(tabId)?.parentElement;
             if (!parent) return;
             parent.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
 
-            // Lazy render
             if (tabGroup === 'wr') {
                 if (tabId === 'wr-tab6' && !renderedTabs.has('wr-tab6')) renderTab6();
                 if (tabId === 'wr-tab1' && !renderedTabs.has('wr-tab1')) renderTab1();
@@ -885,7 +865,6 @@
             } else if (tabGroup === 'eda') {
                 if (!renderedTabs.has('eda-monthly')) renderEdaCharts();
             }
-            // Resize visible charts
             setTimeout(() => {
                 for (const [id, chart] of Object.entries(chartInstances)) {
                     if (document.getElementById(id)?.offsetParent !== null) chart.resize();
@@ -893,24 +872,19 @@
             }, 50);
         }
 
-        // Attach tab click handlers
         document.addEventListener('click', e => {
             const btn = e.target.closest('.tab-btn');
             if (btn) switchTab(btn.dataset.tabgroup, btn.dataset.tab);
         });
 
         // ============================================================================
-        // 📂 DATA STATE
+        // 📂 DATA STATE & PREPROCESSING
         // ============================================================================
         let dfDemand = [], dfSupply = [];
-        // Preprocessed
         let supplyHaveAll = [], supplyWalkinAll = [];
         let demandDedupGlobal = [], supplyHaveDedupGlobal = [];
         let demandFest = [], supplyFest = [];
 
-        // ============================================================================
-        // 📂 DATA LOADING & PREPROCESSING
-        // ============================================================================
         async function loadData() {
             try {
                 document.getElementById('loading-text').innerText = 'กำลังดาวน์โหลดไฟล์ CSV...';
@@ -921,131 +895,91 @@
                 const demandCsv = await demandRes.text();
                 const supplyCsv = await supplyRes.text();
 
-                document.getElementById('loading-text').innerText = 'กำลังแปลงข้อมูล...';
                 dfDemand = Papa.parse(demandCsv, { header: true, skipEmptyLines: true }).data;
                 dfSupply = Papa.parse(supplyCsv, { header: true, skipEmptyLines: true }).data;
 
-                console.log("โหลดข้อมูลสำเร็จ!", { demand: dfDemand.length, supply: dfSupply.length });
-
-                document.getElementById('loading-text').innerText = 'กำลังประมวลผลข้อมูล...';
                 preprocessData();
 
                 document.getElementById('loading-screen').style.display = 'none';
                 renderAllCharts();
             } catch (error) {
                 console.error("เกิดข้อผิดพลาด:", error);
-                document.getElementById('loading-text').innerText = '❌ โหลดข้อมูลไม่สำเร็จ กรุณาเช็ก Path หรือรันผ่าน Local Server (python -m http.server)';
+                document.getElementById('loading-text').innerText = '❌ โหลดข้อมูลไม่สำเร็จ กรุณาเช็ก Path';
             }
         }
 
         function preprocessData() {
-            // Add computed columns to demand
             dfDemand.forEach(r => {
                 r.Post_Hour = parseHour(r.Post_Time);
                 r.Clean_Shop = r.Wanted_Shop ? r.Wanted_Shop.split(',')[0].trim() : '';
             });
-            // Add computed columns to supply
             dfSupply.forEach(r => {
                 r.Post_Hour = parseHour(r.Post_Time);
                 r.Clean_Shop = r.Supply_Shop ? r.Supply_Shop.split(',')[0].trim() : '';
             });
 
-            // Global splits
             supplyHaveAll = dfSupply.filter(r => r.Inventory_Status === 'มีของในมือ');
             supplyWalkinAll = dfSupply.filter(r => r.Inventory_Status === 'ไม่มีของในมือ');
 
-            // Global dedup
             demandDedupGlobal = deduplicate(dfDemand, ['Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'first');
             supplyHaveDedupGlobal = deduplicate(supplyHaveAll, ['Seller_Name', 'Supply_Table_Date', 'Supply_Shop', 'Supply_Zone'], 'last');
 
-            // Festival data for War Room
             let dfDFest = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire));
             dfDFest = deduplicate(dfDFest, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
             let dfSFest = dfSupply.filter(r => r.Inventory_Status === 'มีของในมือ');
             dfSFest = deduplicate(dfSFest, ['Post_Date', 'Seller_Name', 'Supply_Table_Date', 'Supply_Shop'], 'last');
 
-            dfDFest.forEach(r => { r.Wanted_Count = parseFloat(r.Wanted_Count) || 1; });
-            dfSFest.forEach(r => { r.Supply_Count = parseFloat(r.Supply_Count) || 1; });
+            dfDFest.forEach(r => { r.Wanted_Count = parseFloat(r.Wanted_Count) || 1; r.Days_Advance = dateDiffDays(r.Wanted_Table_Date, r.Post_Date); });
+            dfSFest.forEach(r => { r.Supply_Count = parseFloat(r.Supply_Count) || 1; r.Days_Advance = dateDiffDays(r.Supply_Table_Date, r.Post_Date); });
 
-            // Days_Advance
-            dfDFest.forEach(r => { r.Days_Advance = dateDiffDays(r.Wanted_Table_Date, r.Post_Date); });
-            dfSFest.forEach(r => { r.Days_Advance = dateDiffDays(r.Supply_Table_Date, r.Post_Date); });
-
-            // Filter สงกรานต์ + Days_Advance >= 0
             demandFest = dfDFest.filter(r => r.festival === 'สงกรานต์' && r.Days_Advance >= 0);
             supplyFest = dfSFest.filter(r => r.festival === 'สงกรานต์' && r.Days_Advance >= 0);
-            // หมายเหตุ: Smart Supply Expiry (การตัดโต๊ะที่เลยวันแล้ว) ถูกใช้เฉพาะใน Tracker (Tab 3)
-            // เพื่อไม่ให้ทำลายข้อมูลย้อนหลังที่กราฟอื่นๆ ต้องใช้แสดงเทรนด์
         }
 
-        // ============================================================================
-        // 🚀 RENDER ALL CHARTS
-        // ============================================================================
         function renderAllCharts() {
             populateDropdowns();
-            renderTab6(); // Initially visible tab
+            renderTab6(); 
         }
 
         function populateDropdowns() {
-            // Tab 6: Real-time dates
             const rtDates = [];
             for (let d = 27; d <= 31; d++) rtDates.push(`2026-03-${String(d).padStart(2, '0')}`);
             for (let d = 1; d <= 19; d++) rtDates.push(`2026-04-${String(d).padStart(2, '0')}`);
             const rtSel = document.getElementById('rt-date-select');
             rtSel.innerHTML = rtDates.map(d => `<option value="${d}">${formatDateFull(d)}</option>`).join('');
 
-            // Tab 2: Micro-Trend dates
-            const microDates = [];
-            for (let d = 27; d <= 31; d++) microDates.push(`2026-03-${String(d).padStart(2, '0')}`);
-            for (let d = 1; d <= 19; d++) microDates.push(`2026-04-${String(d).padStart(2, '0')}`);
             const microSel = document.getElementById('micro-date-select');
-            microSel.innerHTML = microDates.map(d => `<option value="${d}">${formatDateFull(d)}</option>`).join('');
+            microSel.innerHTML = rtDates.map(d => `<option value="${d}">${formatDateFull(d)}</option>`).join('');
 
-            // Tab 5: Reverse demand dates (from data, descending)
             const revDemand = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire));
             const revDates = [...new Set(revDemand.map(r => dateOnly(r.Post_Date)).filter(Boolean))].sort().reverse();
             const revSel = document.getElementById('rev-date-select');
             revSel.innerHTML = revDates.map(d => `<option value="${d}">${formatDateFull(d)}</option>`).join('');
 
-            // EDA Filters
             const allFests = [...new Set([...dfDemand.map(r => r.festival), ...dfSupply.map(r => r.festival)].filter(Boolean))].sort();
             const allShops = [...new Set([...dfDemand.map(r => r.Clean_Shop), ...dfSupply.map(r => r.Clean_Shop)].filter(x => x && x !== ''))].sort();
-            const festSel = document.getElementById('eda-fest-filter');
-            festSel.innerHTML = allFests.map(f => `<option value="${f}" selected>${f}</option>`).join('');
-            const shopSel = document.getElementById('eda-shop-filter');
-            shopSel.innerHTML = allShops.map(s => `<option value="${s}" selected>${s}</option>`).join('');
+            document.getElementById('eda-fest-filter').innerHTML = allFests.map(f => `<option value="${f}" selected>${f}</option>`).join('');
+            document.getElementById('eda-shop-filter').innerHTML = allShops.map(s => `<option value="${s}" selected>${s}</option>`).join('');
         }
 
         // ============================================================================
-        // TAB 6: 🎯 Real-Time Shop War (Hourly)
+        // TAB 6: 🎯 Real-Time Shop War (Hourly) - 🌟 อัปเกรดนับ Table Volume
         // ============================================================================
         function renderTab6() {
             renderedTabs.add('wr-tab6');
             const selectedDate = document.getElementById('rt-date-select').value;
             if (!selectedDate) return;
 
-            // 1. Filter demand: same-day + festival
-            let dRt = demandFest.filter(r =>
-                dateOnly(r.Wanted_Table_Date) === selectedDate &&
-                dateOnly(r.Post_Date) === selectedDate &&
-                r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire)
-            );
+            let dRt = demandFest.filter(r => dateOnly(r.Wanted_Table_Date) === selectedDate && dateOnly(r.Post_Date) === selectedDate && r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire));
+            let sRt = supplyFest.filter(r => dateOnly(r.Supply_Table_Date) === selectedDate && dateOnly(r.Post_Date) === selectedDate);
 
-            // 2. Filter supply: same-day
-            let sRt = supplyFest.filter(r =>
-                dateOnly(r.Supply_Table_Date) === selectedDate &&
-                dateOnly(r.Post_Date) === selectedDate
-            );
-
-            // 3. Explode shops
             function explodeShops(arr, shopField) {
                 const result = [];
                 arr.forEach(r => {
                     const shops = (r[shopField] || '').split(',').map(s => s.trim()).filter(Boolean);
                     if (shops.length === 0) shops.push('ไม่ระบุร้าน');
                     shops.forEach(s => {
-                        const nr = { ...r, Clean_Shop: (s === 'nan' || s === 'None' || s === 'NaN' || s === '') ? 'ไม่ระบุร้าน' : s };
-                        result.push(nr);
+                        result.push({ ...r, Clean_Shop: (s === 'nan' || s === 'None' || s === '') ? 'ไม่ระบุร้าน' : s });
                     });
                 });
                 return result;
@@ -1053,22 +987,27 @@
             dRt = explodeShops(dRt, 'Wanted_Shop');
             sRt = explodeShops(sRt, 'Supply_Shop');
 
-            // 4. Dedup 1 person/1 shop/1 hour
             dRt = deduplicate(dRt, ['Customer_Name', 'Post_Hour', 'Clean_Shop'], 'last');
             sRt = deduplicate(sRt, ['Seller_Name', 'Post_Hour', 'Clean_Shop'], 'last');
 
-            // 5. Group by hour & shop
             const hours = Array.from({ length: 24 }, (_, i) => i);
-            function hourShopCount(arr, shopName) {
+            
+            // 🌟 เปลี่ยนจาก groupByCount เป็น groupBySum ตามจำนวนโต๊ะ
+            function hourShopCountDemand(arr, shopName) {
                 const filtered = arr.filter(r => r.Clean_Shop === shopName);
-                const counts = groupByCount(filtered, r => r.Post_Hour);
+                const counts = groupBySum(filtered, r => r.Post_Hour, 'Wanted_Count');
+                return hours.map(h => counts[h] || 0);
+            }
+            function hourShopCountSupply(arr, shopName) {
+                const filtered = arr.filter(r => r.Clean_Shop === shopName);
+                const counts = groupBySum(filtered, r => r.Post_Hour, 'Supply_Count');
                 return hours.map(h => counts[h] || 0);
             }
 
-            const dHash = hourShopCount(dRt, 'Hashtags (#)');
-            const sHash = hourShopCount(sRt, 'Hashtags (#)');
-            const dRep = hourShopCount(dRt, 'Replayground');
-            const sRep = hourShopCount(sRt, 'Replayground');
+            const dHash = hourShopCountDemand(dRt, 'Hashtags (#)');
+            const sHash = hourShopCountSupply(sRt, 'Hashtags (#)');
+            const dRep = hourShopCountDemand(dRt, 'Replayground');
+            const sRep = hourShopCountSupply(sRt, 'Replayground');
             const labels = hours.map(h => `${String(h).padStart(2, '0')}`);
 
             createChart('chart-rt-shopwar', {
@@ -1085,31 +1024,28 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        title: { display: true, text: `การต่อสู้รายชั่วโมงประจำวันที่ ${formatDateFull(selectedDate)}`, font: { size: 16, weight: 'bold', family: 'Sarabun' } },
+                        title: { display: true, text: `ปริมาณโต๊ะรายชั่วโมงประจำวันที่ ${formatDateFull(selectedDate)}`, font: { size: 16, weight: 'bold', family: 'Sarabun' } },
                         legend: { position: 'top', labels: { font: { family: 'Sarabun' } } }
                     },
                     scales: {
                         x: { title: { display: true, text: 'ชั่วโมง (0 = เที่ยงคืน)' }, ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } },
-                        y: { title: { display: true, text: 'จำนวนคน (Unique Users/Hour)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }
+                        y: { title: { display: true, text: 'ปริมาณโต๊ะรวม (Table Volume)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }
                     }
                 }
             });
 
-            // Summary cards
             const totalDH = dHash.reduce((a, b) => a + b, 0), totalSH = sHash.reduce((a, b) => a + b, 0);
             const totalDR = dRep.reduce((a, b) => a + b, 0), totalSR = sRep.reduce((a, b) => a + b, 0);
             document.getElementById('rt-summary').innerHTML = `
-        <div class="card-error p-4 rounded-lg"><b>🔴 Hashtags (#)</b><br>- ยอด Demand รวมวันนี้: <b>${totalDH}</b> คน<br>- ยอด Supply รวมวันนี้: <b>${totalSH}</b> คน</div>
-        <div class="card-info p-4 rounded-lg"><b>🔵 Replayground</b><br>- ยอด Demand รวมวันนี้: <b>${totalDR}</b> คน<br>- ยอด Supply รวมวันนี้: <b>${totalSR}</b> คน</div>`;
+        <div class="card-error p-4 rounded-lg"><b>🔴 Hashtags (#)</b><br>- ปริมาณโต๊ะที่ลูกค้าหา: <b>${totalDH}</b> โต๊ะ<br>- ปริมาณโต๊ะที่แม่ค้ามี: <b>${totalSH}</b> โต๊ะ</div>
+        <div class="card-info p-4 rounded-lg"><b>🔵 Replayground</b><br>- ปริมาณโต๊ะที่ลูกค้าหา: <b>${totalDR}</b> โต๊ะ<br>- ปริมาณโต๊ะที่แม่ค้ามี: <b>${totalSR}</b> โต๊ะ</div>`;
         }
 
         // ============================================================================
-        // TAB 1: ⚔️ Macro (Shop War + Bar + Days Advance)
+        // TAB 1: ⚔️ Macro (Shop War + Bar + Days Advance) - 🌟 อัปเกรดนับ Table Volume
         // ============================================================================
         function renderTab1() {
             renderedTabs.add('wr-tab1');
-
-            // ===== Shop War Battle Chart =====
             const targetShops = ['Hashtags (#)', 'Replayground'];
             let dBattle = demandDedupGlobal.filter(r => {
                 const dt = new Date(r.Wanted_Table_Date);
@@ -1120,20 +1056,17 @@
                 return !isNaN(dt) && [3, 4].includes(dt.getMonth() + 1) && targetShops.includes(r.Supply_Shop);
             });
 
-            const dHashG = groupByCount(dBattle.filter(r => r.Wanted_Shop === 'Hashtags (#)'), r => dateOnly(r.Wanted_Table_Date));
-            const sHashG = groupByCount(sBattle.filter(r => r.Supply_Shop === 'Hashtags (#)'), r => dateOnly(r.Supply_Table_Date));
-            const dRepG = groupByCount(dBattle.filter(r => r.Wanted_Shop === 'Replayground'), r => dateOnly(r.Wanted_Table_Date));
-            const sRepG = groupByCount(sBattle.filter(r => r.Supply_Shop === 'Replayground'), r => dateOnly(r.Supply_Table_Date));
+            // 🌟 เปลี่ยนจาก groupByCount เป็น groupBySum
+            const dHashG = groupBySum(dBattle.filter(r => r.Wanted_Shop === 'Hashtags (#)'), r => dateOnly(r.Wanted_Table_Date), 'Wanted_Count');
+            const sHashG = groupBySum(sBattle.filter(r => r.Supply_Shop === 'Hashtags (#)'), r => dateOnly(r.Supply_Table_Date), 'Supply_Count');
+            const dRepG = groupBySum(dBattle.filter(r => r.Wanted_Shop === 'Replayground'), r => dateOnly(r.Wanted_Table_Date), 'Wanted_Count');
+            const sRepG = groupBySum(sBattle.filter(r => r.Supply_Shop === 'Replayground'), r => dateOnly(r.Supply_Table_Date), 'Supply_Count');
 
             const allDates = [...new Set([...Object.keys(dHashG), ...Object.keys(sHashG), ...Object.keys(dRepG), ...Object.keys(sRepG)])].sort();
-
             const continuousDates = [];
-            let curr = new Date('2026-03-01');
-            const end = new Date('2026-04-19');
+            let curr = new Date('2026-03-01'), end = new Date('2026-04-19');
             while (curr <= end) {
-                const yyyy = curr.getFullYear();
-                const mm = String(curr.getMonth() + 1).padStart(2, '0');
-                const dd = String(curr.getDate()).padStart(2, '0');
+                const yyyy = curr.getFullYear(), mm = String(curr.getMonth() + 1).padStart(2, '0'), dd = String(curr.getDate()).padStart(2, '0');
                 continuousDates.push(`${yyyy}-${mm}-${dd}`);
                 curr.setDate(curr.getDate() + 1);
             }
@@ -1141,7 +1074,6 @@
             const battleLabels = continuousDates.map(formatDateShort);
             const bDH = continuousDates.map(d => dHashG[d] || 0), bSH = continuousDates.map(d => sHashG[d] || 0);
             const bDR = continuousDates.map(d => dRepG[d] || 0), bSR = continuousDates.map(d => sRepG[d] || 0);
-
 
             if (allDates.length > 0) {
                 createChart('chart-shopwar-battle', {
@@ -1158,14 +1090,10 @@
                     options: {
                         responsive: true,
                         plugins: {
-                            title: { display: true, text: 'สงครามขั้วอำนาจ: การเติบโตของดีมานด์ (มีนาคม - เมษายน)', font: { size: 16, weight: 'bold', family: 'Sarabun' } },
-                            legend: { position: 'bottom', labels: { font: { family: 'Sarabun' } } },
-                            zoom: {
-                                zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' },
-                                pan: { enabled: true, mode: 'x' }
-                            }
+                            title: { display: true, text: 'สงครามขั้วอำนาจ: ปริมาณโต๊ะรวมในตลาด (มี.ค. - เม.ย.)', font: { size: 16, weight: 'bold', family: 'Sarabun' } },
+                            legend: { position: 'bottom', labels: { font: { family: 'Sarabun' } } }
                         },
-                        scales: { y: { title: { display: true, text: 'ปริมาณความต้องการ (Unique Posts)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
+                        scales: { y: { title: { display: true, text: 'ปริมาณโต๊ะ (Table Volume)' }, beginAtZero: true }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
                     }
                 });
 
@@ -1173,8 +1101,8 @@
                 const totalSHash = bSH.reduce((a, b) => a + b, 0), totalSRep = bSR.reduce((a, b) => a + b, 0);
 
                 document.getElementById('macro-battle-summary').innerHTML = `
-            <div class="card-info p-4 rounded-lg"><b>🔴 Hashtags (#)</b><br>- 📈 ดีมานด์รวม (มี.ค.-เม.ย.): <b>${totalDHash}</b> โพสต์<br>- 📦 ซัพพลายที่ปล่อยออกมา: <b>${totalSHash}</b> โพสต์</div>
-            <div class="card-success p-4 rounded-lg"><b>🔵 Replayground</b><br>- 📈 ดีมานด์รวม (มี.ค.-เม.ย.): <b>${totalDRep}</b> โพสต์<br>- 📦 ซัพพลายที่ปล่อยออกมา: <b>${totalSRep}</b> โพสต์</div>`;
+            <div class="card-info p-4 rounded-lg"><b>🔴 Hashtags (#)</b><br>- 📈 โต๊ะที่คนหา (มี.ค.-เม.ย.): <b>${totalDHash}</b> โต๊ะ<br>- 📦 สต็อกที่ปล่อยออกมา: <b>${totalSHash}</b> โต๊ะ</div>
+            <div class="card-success p-4 rounded-lg"><b>🔵 Replayground</b><br>- 📈 โต๊ะที่คนหา (มี.ค.-เม.ย.): <b>${totalDRep}</b> โต๊ะ<br>- 📦 สต็อกที่ปล่อยออกมา: <b>${totalSRep}</b> โต๊ะ</div>`;
 
                 let alertHtml = '';
                 if (totalDRep > totalDHash) alertHtml = `<div class="card-warning p-4 rounded-lg">🚨 <b>MARKET ALERT:</b> ขณะนี้ดีมานด์ของ <b>Replayground</b> กำลังพลิกแซง Hashtags (#) แล้ว! สัญญาณบ่งบอกว่ากระแสเริ่มย้ายฝั่ง ควรเริ่มตุนโต๊ะฝั่ง Replay ไว้ทำกำไร</div>`;
@@ -1183,7 +1111,6 @@
                 document.getElementById('macro-market-alert').innerHTML = alertHtml;
             }
 
-            // ===== Bar chart: Demand vs Supply (Songkran) =====
             const aggDemand = groupBySum(demandFest, 'festival', 'Wanted_Count');
             const aggSupply = groupBySum(supplyFest, 'festival', 'Supply_Count');
             const festivals = [...new Set([...Object.keys(aggDemand), ...Object.keys(aggSupply)])];
@@ -1198,22 +1125,21 @@
                     data: {
                         labels: festivals,
                         datasets: [
-                            { label: 'Real Demand', data: totalD, backgroundColor: '#E63946', borderColor: '#000', borderWidth: 1 },
-                            { label: 'Real Supply', data: totalS, backgroundColor: '#457B9D', borderColor: '#000', borderWidth: 1 },
+                            { label: 'Real Demand (โต๊ะที่ต้องการ)', data: totalD, backgroundColor: '#E63946', borderColor: '#000', borderWidth: 1 },
+                            { label: 'Real Supply (โต๊ะที่มีในมือ)', data: totalS, backgroundColor: '#457B9D', borderColor: '#000', borderWidth: 1 },
                         ]
                     },
                     options: {
                         responsive: true,
                         plugins: {
-                            title: { display: true, text: 'สัดส่วนความต้องการ vs โต๊ะที่มี', font: { size: 14, weight: 'bold', family: 'Sarabun' } },
+                            title: { display: true, text: 'สัดส่วนโต๊ะที่คนต้องการ vs โต๊ะที่มี', font: { size: 14, weight: 'bold', family: 'Sarabun' } },
                             tooltip: { callbacks: { afterLabel: (ctx) => { const r = ratios[ctx.dataIndex]; return `D:S = ${r.toFixed(1)}x (${r > 1 ? '🔥 ของขาด!' : '💧 ของล้น'})`; } } },
                         },
-                        scales: { y: { title: { display: true, text: 'ปริมาณโต๊ะ' }, beginAtZero: true } }
+                        scales: { y: { title: { display: true, text: 'ปริมาณโต๊ะรวม' }, beginAtZero: true } }
                     }
                 });
             }
 
-            // ===== Days Advance chart =====
             const dTrend = groupBySum(demandFest, 'Days_Advance', 'Wanted_Count');
             const sTrend = groupBySum(supplyFest, 'Days_Advance', 'Supply_Count');
             const maxDays = Math.max(...[...Object.keys(dTrend), ...Object.keys(sTrend)].map(Number).filter(n => !isNaN(n)), 0);
@@ -1231,14 +1157,14 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: { title: { display: true, text: 'คนเริ่มหาของ/ปล่อยของ ล่วงหน้ากี่วัน?', font: { size: 14, weight: 'bold', family: 'Sarabun' } } },
-                    scales: { x: { title: { display: true, text: 'วันล่วงหน้า' } }, y: { beginAtZero: true } }
+                    plugins: { title: { display: true, text: 'คนเริ่มหาโต๊ะ/ปล่อยโต๊ะ ล่วงหน้ากี่วัน?', font: { size: 14, weight: 'bold', family: 'Sarabun' } } },
+                    scales: { x: { title: { display: true, text: 'วันล่วงหน้า' } }, y: { title: { display: true, text: 'จำนวนโต๊ะ' }, beginAtZero: true } }
                 }
             });
         }
 
         // ============================================================================
-        // TAB 2: ⏳ Micro-Trend
+        // TAB 2: ⏳ Micro-Trend (Already uses groupBySum natively! 🎉)
         // ============================================================================
         function renderTab2() {
             renderedTabs.add('wr-tab2');
@@ -1248,6 +1174,7 @@
             const dMicro = demandFest.filter(r => dateOnly(r.Wanted_Table_Date) === selectedDate);
             const sMicro = supplyFest.filter(r => dateOnly(r.Supply_Table_Date) === selectedDate);
 
+            // อันนี้สมบูรณ์แล้ว เพราะบอสใช้ groupBySum ไว้แล้ว! 
             const tsDemand = groupBySum(dMicro, r => dateOnly(r.Post_Date), 'Wanted_Count');
             const tsSupply = groupBySum(sMicro, r => dateOnly(r.Post_Date), 'Supply_Count');
 
@@ -1264,55 +1191,52 @@
             const cumDemand = cumSum(demandVals);
             const cumSupply = cumSum(supplyVals);
 
-            // Daily chart
             createChart('chart-micro-daily', {
                 type: 'line',
                 data: {
                     labels,
                     datasets: [
-                        { label: '🔥 ลูกค้าโพสต์หาโต๊ะ (Demand)', data: demandVals, borderColor: '#D62828', borderWidth: 2.5, pointRadius: 4, tension: 0.2, fill: { target: 1, above: 'rgba(214,40,40,0.15)', below: 'rgba(69,123,157,0.15)' } },
-                        { label: '📦 แม่ค้าโพสต์ขาย (Supply)', data: supplyVals, borderColor: '#457B9D', borderWidth: 2.5, borderDash: [6, 3], pointRadius: 4, pointStyle: 'rect', tension: 0.2, fill: false },
+                        { label: '🔥 จำนวนโต๊ะที่ลูกค้าหา (Demand)', data: demandVals, borderColor: '#D62828', borderWidth: 2.5, pointRadius: 4, tension: 0.2, fill: { target: 1, above: 'rgba(214,40,40,0.15)', below: 'rgba(69,123,157,0.15)' } },
+                        { label: '📦 จำนวนโต๊ะที่แม่ค้าปล่อย (Supply)', data: supplyVals, borderColor: '#457B9D', borderWidth: 2.5, borderDash: [6, 3], pointRadius: 4, pointStyle: 'rect', tension: 0.2, fill: false },
                     ]
                 },
                 options: {
                     responsive: true,
-                    plugins: { title: { display: true, text: `ความร้อนแรงของโต๊ะวันที่ ${formatDateFull(selectedDate)} (แยกตามวันที่คนโพสต์)`, font: { size: 15, weight: 'bold', family: 'Sarabun' } } },
-                    scales: { y: { title: { display: true, text: 'จำนวนโต๊ะที่โพสต์ในวันนั้น' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
+                    plugins: { title: { display: true, text: `วอลลุ่มโต๊ะประจำวันที่ ${formatDateFull(selectedDate)} (แยกตามวันที่คนโพสต์)`, font: { size: 15, weight: 'bold', family: 'Sarabun' } } },
+                    scales: { y: { title: { display: true, text: 'ปริมาณโต๊ะรวม (Volume)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
                 }
             });
 
-            // Cumulative chart
             createChart('chart-micro-cumulative', {
                 type: 'line',
                 data: {
                     labels,
                     datasets: [
-                        { label: 'Demand สะสม', data: cumDemand, borderColor: '#D62828', borderWidth: 2, fill: false, tension: 0.2 },
-                        { label: 'Supply สะสม', data: cumSupply, borderColor: '#457B9D', borderWidth: 2, borderDash: [6, 3], fill: false, tension: 0.2 },
+                        { label: 'Demand โต๊ะสะสม', data: cumDemand, borderColor: '#D62828', borderWidth: 2, fill: false, tension: 0.2 },
+                        { label: 'Supply โต๊ะสะสม', data: cumSupply, borderColor: '#457B9D', borderWidth: 2, borderDash: [6, 3], fill: false, tension: 0.2 },
                     ]
                 },
                 options: {
                     responsive: true,
-                    plugins: { title: { display: true, text: 'สต็อกคงค้างสะสมในระบบ (Cumulative)', font: { size: 13, weight: 'bold', family: 'Sarabun' } } },
-                    scales: { y: { title: { display: true, text: 'ยอดสะสมรวม' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
+                    plugins: { title: { display: true, text: 'ยอดโต๊ะค้างสะสมในระบบ (Cumulative Volume)', font: { size: 13, weight: 'bold', family: 'Sarabun' } } },
+                    scales: { y: { title: { display: true, text: 'ยอดสะสมโต๊ะรวม' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
                 }
             });
 
-            // Summary cards
             const totalD = demandVals.reduce((a, b) => a + b, 0), totalS = supplyVals.reduce((a, b) => a + b, 0);
             let statusHtml = '';
             if (totalD > totalS) statusHtml = `<div class="card-success p-4 rounded-lg"><b>📈 สถานะตลาดปัจจุบัน:</b><br>ขาดตลาด (กักตุนโก่งราคาได้)</div>`;
-            else if (totalS > totalD * 1.5) statusHtml = `<div class="card-error p-4 rounded-lg"><b>🚨 สถานะตลาดปัจจุบัน:</b><br>ของล้นตลาด (Oversupply ควรดัมพ์ราคา)</div>`;
+            else if (totalS > totalD * 1.5) statusHtml = `<div class="card-error p-4 rounded-lg"><b>🚨 สถานะตลาดปัจจุบัน:</b><br>โต๊ะล้นตลาด (Oversupply ควรดัมพ์ราคา)</div>`;
             else statusHtml = `<div class="card-warning p-4 rounded-lg"><b>⚖️ สถานะตลาดปัจจุบัน:</b><br>สมดุล (ระวังการเทขายนาทีสุดท้าย)</div>`;
 
             document.getElementById('micro-summary').innerHTML = `
-        <div class="card-info p-4 rounded-lg"><b>🔥 ยอดรวม Demand สะสม:</b><br>${totalD} โต๊ะ</div>
-        <div class="card-info p-4 rounded-lg"><b>📦 ยอดรวม Supply สะสม:</b><br>${totalS} โต๊ะ</div>
+        <div class="card-info p-4 rounded-lg"><b>🔥 ยอดรวมโต๊ะ Demand สะสม:</b><br>${totalD} โต๊ะ</div>
+        <div class="card-info p-4 rounded-lg"><b>📦 ยอดรวมโต๊ะ Supply สะสม:</b><br>${totalS} โต๊ะ</div>
         ${statusHtml}`;
         }
 
         // ============================================================================
-        // TAB 3: 🕵️ Tracker (Competitor Timeline)
+        // TAB 3: 🕵️ Tracker (Competitor Timeline) - 🌟 อัปเกรดระบบ "Cloning Tables"
         // ============================================================================
         function renderTab3() {
             renderedTabs.add('wr-tab3');
@@ -1321,7 +1245,6 @@
             for (let d = 27; d <= 31; d++) targetDatesTracker.push(`2026-03-${d}`);
             for (let d = 1; d <= 19; d++) targetDatesTracker.push(`2026-04-${String(d).padStart(2, '0')}`);
 
-            // spy_df: raw supply, สงกรานต์ + ปล่อยโต๊ะ
             let spyDf = dfSupply.filter(r => r.festival === 'สงกรานต์' && r.Supply_Type === 'ปล่อยโต๊ะ');
             spyDf = deduplicate(spyDf, ['Post_Date', 'Post_Time', 'Seller_Name', 'Supply_Table_Date', 'Supply_Shop'], 'last');
             spyDf.forEach(r => {
@@ -1332,7 +1255,6 @@
             });
             spyDf = spyDf.filter(r => !isNaN(r.Real_Post_DT));
 
-            // Build seller_memory
             const sellerMemory = {};
             spyDf.forEach(r => {
                 if (!r.Supply_Table_Date) return;
@@ -1345,7 +1267,6 @@
                 sellerMemory[seller][dStr] = shopName;
             });
 
-            // Build inventory_history
             const spyGrouped = {};
             spyDf.forEach(r => {
                 const key = `${r.Seller_Name}|||${r.Real_Post_DT.getTime()}`;
@@ -1372,14 +1293,18 @@
                     if (shopName === 'Hashtags (#)') sShort = '(#)';
                     else if (shopName === 'Replayground') sShort = '(re)';
                     else sShort = `(${shopName.substring(0, 2)})`;
-                    tables.add(`${dStr}|${sShort}`);
+                    
+                    // 🌟 NEW LOGIC: แตกจำนวนโต๊ะใส่เข้าไปใน Set เพื่อจับตอนมันแหว่งหายไป!
+                    let count = parseInt(r.Supply_Count) || 1;
+                    for (let c = 1; c <= count; c++) {
+                        tables.add(`${dStr}|${sShort}|${c}`);
+                    }
                 });
                 if (tables.size > 0) inventoryHistory.push({ seller, postDate: postDT, inventory: tables });
             });
 
             inventoryHistory.sort((a, b) => a.seller.localeCompare(b.seller) || a.postDate - b.postDate);
 
-            // Build plot_data with sold detection
             const plotData = [];
             const fakeSellers = {};
             const sellerGroups = groupBy(inventoryHistory, 'seller');
@@ -1388,7 +1313,6 @@
                 group.sort((a, b) => a.postDate - b.postDate);
                 let prevInventory = new Set();
 
-                // Build future inventories
                 const futureInvs = group.map((_, i) => {
                     const futureSet = new Set();
                     for (let j = i + 1; j < group.length; j++) {
@@ -1427,7 +1351,6 @@
                 return;
             }
 
-            // Filter active sellers (> 1 data point)
             const sellerCounts = {};
             plotData.forEach(r => { sellerCounts[r.seller] = (sellerCounts[r.seller] || 0) + 1; });
             const activeSellers = Object.keys(sellerCounts).filter(s => sellerCounts[s] > 1);
@@ -1438,7 +1361,6 @@
                 return;
             }
 
-            // Compute seller stats
             const sellerStats = [];
             const plotSellerGroups = groupBy(filteredPlotData, 'seller');
             Object.entries(plotSellerGroups).forEach(([seller, grp]) => {
@@ -1448,15 +1370,14 @@
                 const latestRow = grp.find(r => r.isLatest) || grp[grp.length - 1];
                 const rawRemaining = latestRow.currentInventory;
 
-                // 🧠 Smart Supply Expiry: ถ้าวันที่ของโต๊ะเลยวันปัจจุบันไปแล้ว = ถูกปล่อยไปแล้วอัตโนมัติ
                 const todayExpiry = new Date().toISOString().slice(0, 10);
                 const remaining = new Set();
                 rawRemaining.forEach(item => {
-                    const datePart = item.split('|')[0]; // e.g. "2026-04-09"
+                    const datePart = item.split('|')[0]; 
                     if (datePart >= todayExpiry) {
-                        remaining.add(item); // ยังไม่ถึงวัน = ยังเหลือจริง
+                        remaining.add(item); 
                     } else {
-                        allSold.add(item); // เลยวันแล้ว = นับว่าปล่อยไปแล้ว
+                        allSold.add(item); 
                         totalSold++;
                     }
                 });
@@ -1471,10 +1392,7 @@
             const top1 = sellerStats[0]?.seller;
             const top5Darkhorse = sellerStats.filter(r => r.sold > 0 && r.seller !== top1).sort((a, b) => a.effortRatio - b.effortRatio).slice(0, 5).map(r => r.seller);
 
-            // ====== BUILD CUSTOM HTML TIMELINE (replaces broken scatter chart) ======
             const uniqueSellers = [...new Set(filteredPlotData.map(r => r.seller))];
-
-            // Find global time range
             const allTimes = filteredPlotData.map(r => r.postDate.getTime());
             const minTime = Math.min(...allTimes);
             const maxTime = Math.max(...allTimes);
@@ -1483,7 +1401,6 @@
             const container = document.getElementById('tracker-timeline-container');
             let html = '';
 
-            // Header row with time labels
             html += '<div class="tracker-row" style="border-bottom:2px solid #ccc;">';
             html += '<div class="tracker-name text-xs text-gray-400">ชื่อแม่ค้า</div>';
             html += '<div class="tracker-timeline" style="display:flex; justify-content:space-between; align-items:center; height:20px;">';
@@ -1495,11 +1412,9 @@
             }
             html += '</div></div>';
 
-            // One row per seller
             uniqueSellers.forEach(seller => {
                 const sellerData = filteredPlotData.filter(r => r.seller === seller).sort((a, b) => a.postDate - b.postDate);
 
-                // Determine badge class
                 let badgeClass = '';
                 if (top5Sellers.includes(seller)) badgeClass = 'badge-gold';
                 else if (top5Darkhorse.includes(seller)) badgeClass = 'badge-blue';
@@ -1509,19 +1424,12 @@
                 html += `<div class="tracker-name"><span class="tracker-name-badge ${badgeClass}">${seller}</span></div>`;
                 html += '<div class="tracker-timeline" style="position:relative;">';
 
-                // Draw connecting line via SVG
                 if (sellerData.length > 1) {
-                    const pts = sellerData.map(r => {
-                        const pct = ((r.postDate.getTime() - minTime) / timeRange) * 100;
-                        return `${pct}%`;
-                    });
-                    // Use a thin line element
                     const firstPct = ((sellerData[0].postDate.getTime() - minTime) / timeRange) * 100;
                     const lastPct = ((sellerData[sellerData.length - 1].postDate.getTime() - minTime) / timeRange) * 100;
                     html += `<div style="position:absolute;top:19px;left:${firstPct}%;width:${lastPct - firstPct}%;height:2px;background:repeating-linear-gradient(90deg,#ccc 0,#ccc 4px,transparent 4px,transparent 8px);"></div>`;
                 }
 
-                // Draw dots
                 sellerData.forEach(r => {
                     const pct = ((r.postDate.getTime() - minTime) / timeRange) * 100;
                     const timeStr = `${String(r.postDate.getDate()).padStart(2, '0')} ${MONTHS_SHORT[r.postDate.getMonth()]} ${String(r.postDate.getHours()).padStart(2, '0')}:${String(r.postDate.getMinutes()).padStart(2, '0')}`;
@@ -1536,12 +1444,11 @@
                     }
                 });
 
-                html += '</div></div>'; // close timeline + row
+                html += '</div></div>';
             });
 
             container.innerHTML = html;
 
-            // Fake sellers alert
             const fakeEntries = Object.entries(fakeSellers);
             if (fakeEntries.length > 0) {
                 document.getElementById('tracker-fake-alert').innerHTML = `
@@ -1554,7 +1461,6 @@
             </div>`;
             }
 
-            // Leaderboard
             let leaderHtml = '<div>';
             leaderHtml += '<h5 class="font-bold mb-2">🏆 5 อันดับแม่ค้าที่ระบายของได้ไวที่สุด</h5>';
             sellerStats.slice(0, 5).forEach((r, i) => {
@@ -1566,7 +1472,6 @@
             });
             leaderHtml += '</div>';
 
-            // Today updates
             leaderHtml += '<div><h5 class="font-bold mb-2">📡 อัปเดตความเคลื่อนไหวล่าสุด</h5>';
             const latestDT = Math.max(...filteredPlotData.map(r => r.postDate.getTime()));
             const todayDate = new Date(latestDT).toISOString().substring(0, 10);
@@ -1588,7 +1493,6 @@
             leaderHtml += '</div>';
             document.getElementById('tracker-leaderboard').innerHTML = leaderHtml;
 
-            // Classification table
             function classifySeller(r) {
                 if (r.sold >= 3 && r.effortRatio <= 5) return { tier: 'ระดับปีศาจ (ปิดการขายไว โพสต์น้อยแต่เน้นผล)', cls: 'tier-devil' };
                 if (r.sold >= 1 && r.effortRatio <= 15) return { tier: 'ระดับมืออาชีพ (ขายได้เรื่อยๆ ตามมาตรฐาน)', cls: 'tier-pro' };
@@ -1605,7 +1509,6 @@
             tableHtml += '</tbody></table>';
             document.getElementById('tracker-classification').innerHTML = tableHtml;
 
-            // Debug: Zinchang timeline
             const zHistory = inventoryHistory.filter(r => r.seller === 'Zinchang');
             if (zHistory.length > 0) {
                 let debugHtml = '';
@@ -1623,64 +1526,51 @@
         }
 
         // ============================================================================
-        // TAB 4: 📊 Hourly Scarcity (Pure Market + Panic Index)
+        // TAB 4: 📊 Hourly Scarcity (Pure Market + Panic Index) - 🌟 อัปเกรดนับ Table Volume
         // ============================================================================
         function renderTab4() {
             renderedTabs.add('wr-tab4');
             const hours = Array.from({ length: 24 }, (_, i) => i);
             const labels = hours.map(h => String(h).padStart(2, '0'));
 
-            // Same-day data (Post_Date === Table_Date)
-            const demandSameday = demandFest.filter(r =>
-                r.type_hire && /หาโต๊ะ/.test(r.type_hire) &&
-                dateOnly(r.Post_Date) === dateOnly(r.Wanted_Table_Date)
-            );
+            const demandSameday = demandFest.filter(r => r.type_hire && /หาโต๊ะ/.test(r.type_hire) && dateOnly(r.Post_Date) === dateOnly(r.Wanted_Table_Date));
             const supplyHaveFest = supplyFest;
-            const supplyWalkinFest = dfSupply.filter(r =>
-                r.festival === 'สงกรานต์' && r.Inventory_Status === 'ไม่มีของในมือ'
-            );
-            const supplyHaveSameday = supplyHaveFest.filter(r =>
-                dateOnly(r.Post_Date) === dateOnly(r.Supply_Table_Date)
-            );
-            const supplyWalkinSameday = supplyWalkinFest.filter(r =>
-                dateOnly(r.Post_Date) === dateOnly(r.Supply_Table_Date)
-            );
+            const supplyWalkinFest = dfSupply.filter(r => r.festival === 'สงกรานต์' && r.Inventory_Status === 'ไม่มีของในมือ');
+            const supplyHaveSameday = supplyHaveFest.filter(r => dateOnly(r.Post_Date) === dateOnly(r.Supply_Table_Date));
+            const supplyWalkinSameday = supplyWalkinFest.filter(r => dateOnly(r.Post_Date) === dateOnly(r.Supply_Table_Date));
 
-            // Pure (unique persons per hour)
             const uniqueDemandHr = deduplicate(demandSameday, ['Customer_Name', 'Post_Hour']);
             const uniqueSupplyHaveHr = deduplicate(supplyHaveSameday, ['Seller_Name', 'Post_Hour']);
             const uniqueSupplyWalkinHr = deduplicate(supplyWalkinSameday, ['Seller_Name', 'Post_Hour']);
 
-            const pureDemandHr = reindex(groupByCount(uniqueDemandHr, 'Post_Hour'), hours, 0);
-            const pureSupplyHaveHr = reindex(groupByCount(uniqueSupplyHaveHr, 'Post_Hour'), hours, 0);
-            const pureSupplyWalkinHr = reindex(groupByCount(uniqueSupplyWalkinHr, 'Post_Hour'), hours, 0);
+            // 🌟 เปลี่ยน Pure Market จากนับคน เป็นนับจำนวนโต๊ะรวม
+            const pureDemandHr = reindex(groupBySum(uniqueDemandHr, 'Post_Hour', 'Wanted_Count'), hours, 0);
+            const pureSupplyHaveHr = reindex(groupBySum(uniqueSupplyHaveHr, 'Post_Hour', 'Supply_Count'), hours, 0);
+            const pureSupplyWalkinHr = reindex(groupBySum(uniqueSupplyWalkinHr, 'Post_Hour', 'Supply_Count'), hours, 0);
+
+            // สำหรับคำนวณ Panic Index เรายังคงต้องรู้ "จำนวนคน" อยู่
+            const purePersonsDHr = reindex(groupByCount(uniqueDemandHr, 'Post_Hour'), hours, 0);
+            const purePersonsSHr = reindex(groupByCount(uniqueSupplyHaveHr, 'Post_Hour'), hours, 0);
 
             const pureDemandArr = hours.map(h => pureDemandHr[h]);
             const pureSupplyHaveArr = hours.map(h => pureSupplyHaveHr[h]);
             const pureSupplyWalkinArr = hours.map(h => pureSupplyWalkinHr[h]);
 
-            // Panic Index (raw counts / unique counts)
-            const rawDSameday = dfDemand.filter(r =>
-                r.festival === 'สงกรานต์' && dateOnly(r.Post_Date) === dateOnly(r.Wanted_Table_Date)
-            );
-            const rawSSameday = dfSupply.filter(r =>
-                r.festival === 'สงกรานต์' && r.Inventory_Status === 'มีของในมือ' &&
-                dateOnly(r.Post_Date) === dateOnly(r.Supply_Table_Date)
-            );
+            const rawDSameday = dfDemand.filter(r => r.festival === 'สงกรานต์' && dateOnly(r.Post_Date) === dateOnly(r.Wanted_Table_Date));
+            const rawSSameday = dfSupply.filter(r => r.festival === 'สงกรานต์' && r.Inventory_Status === 'มีของในมือ' && dateOnly(r.Post_Date) === dateOnly(r.Supply_Table_Date));
 
             const rawDemandHr = reindex(groupByCount(rawDSameday, 'Post_Hour'), hours, 0);
             const rawSupplyHaveHr = reindex(groupByCount(rawSSameday, 'Post_Hour'), hours, 0);
 
             const panicDemandArr = hours.map(h => {
-                const pure = pureDemandHr[h] || 1;
-                return pure > 0 ? (rawDemandHr[h] || 0) / pure : 0;
+                const persons = purePersonsDHr[h] || 1;
+                return persons > 0 ? (rawDemandHr[h] || 0) / persons : 0;
             });
             const panicSupplyArr = hours.map(h => {
-                const pure = pureSupplyHaveHr[h] || 1;
-                return pure > 0 ? (rawSupplyHaveHr[h] || 0) / pure : 0;
+                const persons = purePersonsSHr[h] || 1;
+                return persons > 0 ? (rawSupplyHaveHr[h] || 0) / persons : 0;
             });
 
-            // Find surge hours
             const maxD = Math.max(...pureDemandArr), minD = Math.min(...pureDemandArr);
             const maxS = Math.max(...pureSupplyHaveArr), minS = Math.min(...pureSupplyHaveArr);
             const demandNorm = pureDemandArr.map(v => (v - minD) / (maxD - minD + 1e-9));
@@ -1691,26 +1581,25 @@
             let peakSurge = 0, peakVal = -Infinity;
             gapScore.forEach((v, i) => { if (v > peakVal) { peakVal = v; peakSurge = i; } });
 
-            // Pure Market chart
             createChart('chart-pure-market', {
                 type: 'line',
                 data: {
                     labels,
                     datasets: [
-                        { label: 'Demand (ลูกค้าจริงๆ ที่หน้ามืดหาโต๊ะ)', data: pureDemandArr, borderColor: C_DEMAND, borderWidth: 2.5, pointRadius: 4, tension: 0.2, fill: { target: 1, above: 'rgba(176,58,46,0.12)', below: 'transparent' } },
-                        { label: 'Supply (แม่ค้าจริงๆ ที่ยังมีโต๊ะ)', data: pureSupplyHaveArr, borderColor: C_SUPPLY, borderWidth: 2.5, pointRadius: 4, pointStyle: 'rect', tension: 0.2, fill: false },
+                        { label: 'Demand (ปริมาณโต๊ะที่ลูกค้าหาจริง)', data: pureDemandArr, borderColor: C_DEMAND, borderWidth: 2.5, pointRadius: 4, tension: 0.2, fill: { target: 1, above: 'rgba(176,58,46,0.12)', below: 'transparent' } },
+                        { label: 'Supply (ปริมาณโต๊ะในมือแม่ค้าจริง)', data: pureSupplyHaveArr, borderColor: C_SUPPLY, borderWidth: 2.5, pointRadius: 4, pointStyle: 'rect', tension: 0.2, fill: false },
                         { label: 'Supply (วอล์กอิน)', data: pureSupplyWalkinArr, borderColor: C_WALKIN, borderWidth: 1.8, borderDash: [6, 3], pointRadius: 3, tension: 0.2, fill: false },
                     ]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        title: { display: true, text: 'Pure Market Size — จำนวนคนจริง (Unique Persons)', font: { size: 14, weight: 'bold', family: 'Sarabun' } },
+                        title: { display: true, text: 'Pure Market Volume — ปริมาณโต๊ะรวมในตลาด (Table Volume)', font: { size: 14, weight: 'bold', family: 'Sarabun' } },
                         tooltip: { callbacks: { afterLabel: ctx => ctx.datasetIndex === 0 ? `⚑ Gap Score: ${gapScore[ctx.dataIndex]?.toFixed(2)}` : '' } }
                     },
                     scales: {
                         x: { title: { display: true, text: 'ชั่วโมง (0 = เที่ยงคืน)' }, ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } },
-                        y: { title: { display: true, text: 'จำนวนคนจริงๆ (Unique Persons)' }, beginAtZero: true }
+                        y: { title: { display: true, text: 'ปริมาณโต๊ะ (Table Volume)' }, beginAtZero: true }
                     }
                 },
                 plugins: [{
@@ -1730,7 +1619,6 @@
                 }]
             });
 
-            // Panic Index chart
             createChart('chart-panic-index', {
                 type: 'line',
                 data: {
@@ -1770,21 +1658,19 @@
                 }]
             });
 
-            // Summary
             document.getElementById('scarcity-summary').innerHTML = `
         <div class="card-success p-4 rounded-lg text-sm"><b>📈 วิธีอ่าน Pure Market:</b><br>ดูกราฟบนเพื่อหานาทีที่ Demand ชนะ Supply แบบขาดลอย นั่นคือเวลาที่บอสควรทำตัวเป็นของแรร์โซน A หน้าเวที ⚑ Golden Surge อยู่ที่ ${String(peakSurge).padStart(2, '0')}:00 น.</div>
         <div class="card-warning p-4 rounded-lg text-sm"><b>🚨 วิธีอ่าน Panic Index:</b><br>ถ้ากราฟล่างสีส้มพุ่งปรี๊ด (แม่ค้าสแปมขายรัวๆ) แสดงว่าคู่แข่งกำลังแห่เทขายของ! บอสแค่ชิมลางลดราคาลงนิดหน่อย จะปิดการขายกวาดตลาดได้ทันที!</div>`;
         }
 
         // ============================================================================
-        // TAB 5: 🔄 เจาะลึกดีมานด์รายวัน (Reverse Perspective)
+        // TAB 5: 🔄 เจาะลึกดีมานด์รายวัน (Reverse Perspective) - 🌟 อัปเกรดรวม Table Volume
         // ============================================================================
         function renderTab5() {
             renderedTabs.add('wr-tab5');
             const selectedDate = document.getElementById('rev-date-select').value;
             if (!selectedDate) return;
 
-            // Filter demand
             let revDemand = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire));
             revDemand = deduplicate(revDemand, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
             const filtered = revDemand.filter(r => dateOnly(r.Post_Date) === selectedDate);
@@ -1794,7 +1680,6 @@
                 return;
             }
 
-            // Explode shops
             const exploded = [];
             filtered.forEach(r => {
                 const shops = (r.Wanted_Shop || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -1806,20 +1691,23 @@
                 });
             });
 
-            // Group by (Wanted_Table_Date, Clean_Shop) → nunique Customer_Name
+            // 🌟 เปลี่ยนจากการนับคน (size) เป็นการรวม (sum) จำนวนโต๊ะที่ลูกค้าคนนั้นหา
             const grouped = {};
             exploded.forEach(r => {
                 const key = `${dateOnly(r.Wanted_Table_Date)}|||${r.Clean_Shop}`;
-                if (!grouped[key]) grouped[key] = { date: dateOnly(r.Wanted_Table_Date), shop: r.Clean_Shop, customers: new Set() };
-                grouped[key].customers.add(r.Customer_Name);
+                if (!grouped[key]) grouped[key] = { date: dateOnly(r.Wanted_Table_Date), shop: r.Clean_Shop, customers: {} };
+                // ถ้าลูกค้าคนเดิม โพสต์หาหลายครั้ง (ในวันนั้น) ให้ยึดจำนวนโต๊ะอันล่าสุด
+                grouped[key].customers[r.Customer_Name] = parseFloat(r.Wanted_Count) || 1;
             });
 
-            const groupedArr = Object.values(grouped).map(r => ({ ...r, count: r.customers.size }));
+            const groupedArr = Object.values(grouped).map(r => {
+                const totalCount = Object.values(r.customers).reduce((a,b)=>a+b, 0);
+                return { ...r, count: totalCount };
+            });
             groupedArr.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
             if (groupedArr.length === 0) return;
 
-            // Pivot: dates as labels, shops as datasets
             const allDates = [...new Set(groupedArr.map(r => r.date))].sort();
             const allShops = [...new Set(groupedArr.map(r => r.shop))];
             const dateLabels = allDates.map(formatDateShort);
@@ -1845,18 +1733,17 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        title: { display: true, text: `เรดาร์สแกนความต้องการ (แชทประจำวันที่ ${selectedDate})`, font: { size: 16, weight: 'bold', family: 'Sarabun' } },
+                        title: { display: true, text: `เรดาร์สแกนปริมาณความต้องการ (แชทประจำวันที่ ${selectedDate})`, font: { size: 16, weight: 'bold', family: 'Sarabun' } },
                         legend: { title: { display: true, text: 'ร้านเป้าหมาย' } }
                     },
                     scales: {
                         x: { title: { display: true, text: 'เป้าหมาย: วันที่อยากได้โต๊ะ' }, stacked: false, ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } },
-                        y: { title: { display: true, text: 'จำนวนคนหา (คน)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }
+                        y: { title: { display: true, text: 'ปริมาณโต๊ะ (Table Volume)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }
                     }
                 }
             });
 
-            // Customer table
-            const colsToShow = ['Post_Time', 'Customer_Name', 'Wanted_Shop', 'Wanted_Table_Date', 'type_hire', 'Raw_Message'];
+            const colsToShow = ['Post_Time', 'Customer_Name', 'Wanted_Count', 'Wanted_Shop', 'Wanted_Table_Date', 'type_hire', 'Raw_Message'];
             let tblHtml = '<table class="w-full text-xs border-collapse"><thead><tr class="bg-gray-200">';
             tblHtml += colsToShow.map(c => `<th class="p-2 text-left">${c}</th>`).join('');
             tblHtml += '</tr></thead><tbody>';
