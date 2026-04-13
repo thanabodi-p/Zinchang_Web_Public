@@ -990,7 +990,7 @@
             // Tab 6: Real-time dates
             const rtDates = [];
             for (let d = 27; d <= 31; d++) rtDates.push(`2026-03-${String(d).padStart(2, '0')}`);
-            for (let d = 1; d <= 13; d++) rtDates.push(`2026-04-${String(d).padStart(2, '0')}`);
+            for (let d = 1; d <= 19; d++) rtDates.push(`2026-04-${String(d).padStart(2, '0')}`);
             const rtSel = document.getElementById('rt-date-select');
             rtSel.innerHTML = rtDates.map(d => `<option value="${d}">${formatDateFull(d)}</option>`).join('');
 
