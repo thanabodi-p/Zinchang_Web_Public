@@ -997,7 +997,7 @@
             // Tab 2: Micro-Trend dates
             const microDates = [];
             for (let d = 27; d <= 31; d++) microDates.push(`2026-03-${String(d).padStart(2, '0')}`);
-            for (let d = 1; d <= 12; d++) microDates.push(`2026-04-${String(d).padStart(2, '0')}`);
+            for (let d = 1; d <= 19; d++) microDates.push(`2026-04-${String(d).padStart(2, '0')}`);
             const microSel = document.getElementById('micro-date-select');
             microSel.innerHTML = microDates.map(d => `<option value="${d}">${formatDateFull(d)}</option>`).join('');
 
