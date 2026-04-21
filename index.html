@@ -1926,7 +1926,7 @@
 
             const monthVal = document.getElementById('oracle-month-select')?.value || 'all';
 
-            let allDates = [...new Set([...dfDemand.map(r => dateOnly(r.Wanted_Table_Date)), ...dfSupply.map(r => dateOnly(r.Supply_Table_Date))])].filter(d => Boolean(d) && d.length === 10).sort();
+            let allDates = [...new Set([...demandDedupGlobal.map(r => dateOnly(r.Wanted_Table_Date)), ...supplyHaveDedupGlobal.map(r => dateOnly(r.Supply_Table_Date))])].filter(d => Boolean(d) && d.length === 10).sort();
 
             if (monthVal !== 'all') {
                 allDates = allDates.filter(d => d.startsWith(monthVal));
@@ -1937,8 +1937,8 @@
                 return;
             }
 
-            const actualDMap = groupBySum(dfDemand, r => dateOnly(r.Wanted_Table_Date), 'Wanted_Count');
-            const actualSMap = groupBySum(dfSupply, r => dateOnly(r.Supply_Table_Date), 'Supply_Count');
+            const actualDMap = groupBySum(demandDedupGlobal, r => dateOnly(r.Wanted_Table_Date), 'Wanted_Count');
+            const actualSMap = groupBySum(supplyHaveDedupGlobal, r => dateOnly(r.Supply_Table_Date), 'Supply_Count');
 
             const predDemands = [];
             const predSupplys = [];
