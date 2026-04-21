@@ -619,11 +619,21 @@
 
             <!-- EDA Oracle -->
             <div id="eda-oracle" class="tab-panel hidden">
-                <h3 class="text-lg font-bold mb-2">🔮 Oracle</h3>
-                <p class="text-gray-500 text-sm mb-4">ระบบพยากรณ์ปริมาณความต้องการและโต๊ะล่วงหน้า (AI Prediction)</p>
-                <div class="bg-white p-6 rounded-lg shadow-md mb-4">
-                    <p class="text-gray-400 text-sm">ส่วนแสดงผลพยากรณ์</p>
+                <h3 class="text-lg font-bold mb-2">🔮 Oracle: AI Prediction vs Actual</h3>
+                <p class="text-gray-500 text-sm mb-4">ระบบพยากรณ์ปริมาณความต้องการและโต๊ะล่วงหน้า (AI Prediction)
+                    เทียบกับข้อมูลจริง</p>
+
+                <div class="mb-4 bg-white p-4 rounded-lg shadow-md flex items-center gap-4">
+                    <label class="font-semibold text-sm">📅 เลือกช่วงเวลาพยากรณ์:</label>
+                    <select id="oracle-month-select" class="border rounded px-3 py-1 text-sm bg-gray-50"
+                        onchange="renderTabOracle()"></select>
                 </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <canvas id="chart-oracle-timeline"></canvas>
+                </div>
+
+                <div id="oracle-summary" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </div>
 
             <!-- EDA Gap -->
@@ -804,25 +814,43 @@
             }
         };
 
-        // ฟังก์ชันจำลองการตรวจจับปฏิทิน (Mockup) ป้องกัน Error กรณียังไม่มีฟังก์ชันนี้จริง
-        function checkCalendarFlags(dateObj) {
+        // ฟังก์ชันตรวจจับปฏิทินจากข้อมูลจริง
+        function checkCalendarFlags(dateStr) {
+            // ค้นหาแถวแรกใน dfDemand ที่ตรงกับวันที่นี้ (หรือ dfSupply)
+            const row = dfDemand.find(r => dateOnly(r.Wanted_Table_Date) === dateStr || dateOnly(r.Post_Date) === dateStr) ||
+                dfSupply.find(r => dateOnly(r.Supply_Table_Date) === dateStr || dateOnly(r.Post_Date) === dateStr);
+
+            if (!row) {
+                return {
+                    is_festival: false, is_fri_sat: false, is_pre_break_final: false,
+                    is_payday: false, is_post_midterm: false, is_concert: false,
+                    is_pre_term: false, is_exam: false, is_post_term: false,
+                    is_hell_week: false, is_break: false
+                };
+            }
             return {
-                is_festival: false, is_fri_sat: false, is_pre_break_final: false,
-                is_payday: false, is_post_midterm: false, is_concert: false,
-                is_pre_term: false, is_exam: false, is_post_term: false,
-                is_hell_week: false, is_break: false
+                is_festival: row.is_festival === 'True' || row.festival === 'สงกรานต์',
+                is_fri_sat: row.is_fri_sat === 'True' || ['ศุกร์', 'เสาร์'].includes(row.Date_of_week),
+                is_pre_break_final: row.is_pre_break_final === 'True',
+                is_payday: row.is_payday === 'True',
+                is_post_midterm: row.is_post_midterm === 'True',
+                is_concert: row.is_concert === 'True',
+                is_pre_term: row.is_pre_term === 'True',
+                is_exam: row.is_exam === 'True',
+                is_post_term: row.is_post_term === 'True',
+                is_hell_week: row.is_hell_week === 'True',
+                is_break: row.is_break === 'True'
             };
         }
 
         // 🔮 ส่วนที่ 2: ฟังก์ชันพยากรณ์ปริมาณสุทธิล่วงหน้า
-        function predictAbsoluteVolume(dateObj) {
+        function predictAbsoluteVolume(dateStr) {
             let finalDem = ORACLE_CONFIG.baseline.demand;
             let finalSup = ORACLE_CONFIG.baseline.supply;
             let activeTags = [];
 
-            // จำลองลอจิกการตรวจจับปฏิทิน (อ้างอิงจากคอลัมน์ใน CSV ที่บอสทำไว้)
-            // ในหน้าเว็บจริง ฟังก์ชันนี้จะไป Look-up กับปฏิทินปี 2569 ที่บอสกรอกใน Python
-            const flags = checkCalendarFlags(dateObj);
+            // อ่าน Flags จากข้อมูลจริง (hybrid)
+            const flags = checkCalendarFlags(dateStr);
 
             Object.keys(ORACLE_CONFIG.multipliers).forEach(key => {
                 if (flags[key]) {
@@ -835,14 +863,14 @@
             return {
                 predictedDemand: Math.round(finalDem),
                 predictedSupply: Math.round(finalSup),
-                scarcityRatio: (finalDem / finalSup).toFixed(2),
+                scarcityRatio: (finalSup > 0) ? (finalDem / finalSup).toFixed(2) : "0",
                 tags: activeTags
             };
         }
 
         // 🔮 ส่วนที่ 3: การ Sum ข้อมูลจริงมา Overlay (Hybrid Logic)
         function updateOracleWithActualData(dateStr, csvData) {
-            // กรองข้อมูลจริงจาก CSV ตามวันที่บอสเลือก
+            // กรองข้อมูลจริงจาก CSV ตามวันที่
             const actual = csvData.filter(row => row.date === dateStr);
             const sumActualDem = actual.reduce((sum, r) => sum + r.Wanted_Count, 0);
             const sumActualSup = actual.reduce((sum, r) => sum + r.Supply_Count, 0);
@@ -941,7 +969,8 @@
                 if (tabId === 'wr-tab4' && !renderedTabs.has('wr-tab4')) renderTab4();
                 if (tabId === 'wr-tab5' && !renderedTabs.has('wr-tab5')) renderTab5();
             } else if (tabGroup === 'eda') {
-                if (!renderedTabs.has('eda-monthly')) renderEdaCharts();
+                if (tabId === 'eda-oracle' && !renderedTabs.has('eda-oracle')) renderTabOracle();
+                else if (tabId !== 'eda-oracle' && !renderedTabs.has('eda-monthly')) renderEdaCharts();
             }
             setTimeout(() => {
                 for (const [id, chart] of Object.entries(chartInstances)) {
@@ -1038,6 +1067,12 @@
             const allShops = [...new Set([...dfDemand.map(r => r.Clean_Shop), ...dfSupply.map(r => r.Clean_Shop)].filter(x => x && x !== ''))].sort();
             document.getElementById('eda-fest-filter').innerHTML = allFests.map(f => `<option value="${f}" selected>${f}</option>`).join('');
             document.getElementById('eda-shop-filter').innerHTML = allShops.map(s => `<option value="${s}" selected>${s}</option>`).join('');
+
+            const oracleSel = document.getElementById('oracle-month-select');
+            if (oracleSel) {
+                const uniqueMonths = [...new Set([...dfDemand.map(r => String(dateOnly(r.Post_Date)).substring(0, 7)), ...dfSupply.map(r => String(dateOnly(r.Post_Date)).substring(0, 7))].filter(x => x && x.length === 7))].sort().reverse();
+                oracleSel.innerHTML = '<option value="all">ดูทั้งหมด (All-Time)</option>' + uniqueMonths.map(m => `<option value="${m}">${THAI_M_DICT[m.substring(5, 7)]} ${m.substring(0, 4)}</option>`).join('');
+            }
         }
 
         // ============================================================================
@@ -1880,6 +1915,99 @@
             renderedTabs.add('eda-monthly');
             renderedTabs.add('eda-gap');
             renderedTabs.add('eda-desperation');
+            if (document.getElementById('eda-oracle') && !document.getElementById('eda-oracle').classList.contains('hidden')) {
+                renderTabOracle();
+            }
+        }
+
+        // ===== Oracle Tab =====
+        function renderTabOracle() {
+            renderedTabs.add('eda-oracle');
+
+            const monthVal = document.getElementById('oracle-month-select')?.value || 'all';
+
+            let allDates = [...new Set([...dfDemand.map(r => dateOnly(r.Wanted_Table_Date)), ...dfSupply.map(r => dateOnly(r.Supply_Table_Date))])].filter(d => Boolean(d) && d.length === 10).sort();
+
+            if (monthVal !== 'all') {
+                allDates = allDates.filter(d => d.startsWith(monthVal));
+            }
+
+            if (allDates.length === 0) {
+                document.getElementById('oracle-summary').innerHTML = '<div class="col-span-2 p-4 card-info">ไม่มีข้อมูลสำหรับช่วงเวลานี้</div>';
+                return;
+            }
+
+            const actualDMap = groupBySum(dfDemand, r => dateOnly(r.Wanted_Table_Date), 'Wanted_Count');
+            const actualSMap = groupBySum(dfSupply, r => dateOnly(r.Supply_Table_Date), 'Supply_Count');
+
+            const predDemands = [];
+            const predSupplys = [];
+            const actDemands = [];
+            const actSupplys = [];
+
+            allDates.forEach(d => {
+                const predicted = predictAbsoluteVolume(d);
+                predDemands.push(predicted.predictedDemand);
+                predSupplys.push(predicted.predictedSupply);
+                actDemands.push(actualDMap[d] || 0);
+                actSupplys.push(actualSMap[d] || 0);
+            });
+
+            const labels = allDates.map(formatDateShort);
+
+            let totalErrorD = 0, totalErrorS = 0, countD = 0, countS = 0;
+            allDates.forEach((d, i) => {
+                if (actDemands[i] > 0) {
+                    totalErrorD += Math.abs(predDemands[i] - actDemands[i]);
+                    countD++;
+                }
+                if (actSupplys[i] > 0) {
+                    totalErrorS += Math.abs(predSupplys[i] - actSupplys[i]);
+                    countS++;
+                }
+            });
+
+            const mae_D = countD > 0 ? (totalErrorD / countD).toFixed(1) : 0;
+            const mae_S = countS > 0 ? (totalErrorS / countS).toFixed(1) : 0;
+
+            createChart('chart-oracle-timeline', {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: '🔥 คนหาจริง (Actual Demand)', data: actDemands, borderColor: '#D62828', borderWidth: 2.5, tension: 0.2, pointRadius: 3, pointBackgroundColor: '#D62828' },
+                        { label: '🔮 พยากรณ์ Demand', data: predDemands, borderColor: '#FA8072', borderDash: [5, 5], borderWidth: 2, tension: 0.2, pointRadius: 0, backgroundColor: 'rgba(214,40,40,0.1)' },
+                        { label: '📦 โต๊ะปล่อยจริง (Actual Supply)', data: actSupplys, borderColor: '#457B9D', borderWidth: 2.5, tension: 0.2, pointRadius: 3, pointBackgroundColor: '#457B9D' },
+                        { label: '🔮 พยากรณ์ Supply', data: predSupplys, borderColor: '#87CEFA', borderDash: [5, 5], borderWidth: 2, tension: 0.2, pointRadius: 0, backgroundColor: 'rgba(69,123,157,0.1)' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: 'Oracle AI: เปรียบเทียบค่าพยากรณ์ vs ตลาดจริง', font: { size: 15, weight: 'bold', family: 'Sarabun' } },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: true, maxTicksLimit: 30 } },
+                        y: { title: { display: true, text: 'ปริมาณโต๊ะ (Volume)' }, beginAtZero: true }
+                    }
+                }
+            });
+
+            document.getElementById('oracle-summary').innerHTML = `
+            <div class="card-warning p-4 rounded-lg relative overflow-hidden">
+                <div class="absolute right-[-10px] top-[-10px] text-5xl opacity-20">🔮</div>
+                <h4 class="font-bold mb-2 text-red-700">🎯 ความแม่นยำของ Model (Demand)</h4>
+                <p class="text-sm text-gray-700">ค่าความคลาดเคลื่อนเฉลี่ย (MAE): <br><span class="text-2xl font-bold text-red-600 border-b-2 border-red-200">±${mae_D} โต๊ะ/วัน</span></p>
+                <p class="text-xs text-red-600 mt-2 opacity-80">*ค่ายิ่งน้อยแสดงว่า AI ทายได้แม่นยำมาก ฐานอ้างอิง Baseline: ${ORACLE_CONFIG.baseline.demand}</p>
+            </div>
+            <div class="card-info p-4 rounded-lg relative overflow-hidden">
+                <div class="absolute right-[-10px] top-[-10px] text-5xl opacity-20">🪄</div>
+                <h4 class="font-bold mb-2 text-blue-700">🎯 ความแม่นยำของ Model (Supply)</h4>
+                <p class="text-sm text-gray-700">ค่าความคลาดเคลื่อนเฉลี่ย (MAE): <br><span class="text-2xl font-bold text-blue-600 border-b-2 border-blue-200">±${mae_S} โต๊ะ/วัน</span></p>
+                <p class="text-xs text-blue-600 mt-2 opacity-80">*ค่ายิ่งน้อยแสดงว่า AI ทายได้แม่นยำมาก ฐานอ้างอิง Baseline: ${ORACLE_CONFIG.baseline.supply}</p>
+            </div>
+            `;
         }
 
         // ===== Monthly Masterplan =====
