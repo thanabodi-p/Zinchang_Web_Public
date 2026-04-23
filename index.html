@@ -995,9 +995,35 @@
         async function loadData() {
             try {
                 document.getElementById('loading-text').innerText = 'กำลังดาวน์โหลดไฟล์ CSV...';
+
+                // =======================================================
+                // 🌟 Smart Path Routing: เช็กว่ารันบนกิตฮับหรือบนเครื่อง
+                // =======================================================
+                let demandPath = './data/Market_Demand_Insights.csv';
+                let supplyPath = './data/Market_Supply_Insights.csv';
+
+                const hostname = window.location.hostname;
+                const protocol = window.location.protocol;
+
+                if (hostname.includes('github.io') || hostname.includes('github.com')) {
+                    // 🌐 รันบน GitHub (Public Web)
+                    console.log("🌍 Running on GitHub: Using Production Paths");
+                    demandPath = './data/Market_Demand_Insights.csv';
+                    supplyPath = './data/Market_Supply_Insights.csv';
+                    // *หากต้องการดึงจาก raw github โดยตรง สามารถแก้ลิงก์ตรงนี้เป็น URL ได้
+                } else if (protocol === 'file:' || hostname === 'localhost' || hostname === '127.0.0.1') {
+                    // 💻 รันบนเครื่อง (Local Environment)
+                    console.log("💻 Running on Local: Using Local/Backend Paths");
+                    // *รองรับการเชื่อมต่อแอพหลังบ้าน (Backend API) ในเครื่องในอนาคต เช่น:
+                    // demandPath = 'http://127.0.0.1:8000/api/demand_data';
+                    // supplyPath = 'http://127.0.0.1:8000/api/supply_data';
+                    demandPath = './data/Market_Demand_Insights.csv';
+                    supplyPath = './data/Market_Supply_Insights.csv';
+                }
+
                 const [demandRes, supplyRes] = await Promise.all([
-                    fetch('./data/Market_Demand_Insights.csv'),
-                    fetch('./data/Market_Supply_Insights.csv')
+                    fetch(demandPath),
+                    fetch(supplyPath)
                 ]);
                 const demandCsv = await demandRes.text();
                 const supplyCsv = await supplyRes.text();
@@ -1921,7 +1947,7 @@
         }
 
         // ===== Oracle Tab =====
-        function renderTabOracle() {
+        async function renderTabOracle() {
             renderedTabs.add('eda-oracle');
 
             const monthVal = document.getElementById('oracle-month-select')?.value || 'all';
@@ -1940,17 +1966,59 @@
             const actualDMap = groupBySum(demandDedupGlobal, r => dateOnly(r.Wanted_Table_Date), 'Wanted_Count');
             const actualSMap = groupBySum(supplyHaveDedupGlobal, r => dateOnly(r.Supply_Table_Date), 'Supply_Count');
 
+            // --- 🌟 เริ่มต้นการดึงข้อมูลจาก FastAPI Backend ---
+            let predictions = {};
+            try {
+                // เช็คว่าเป็น localhost หรือไม่ (ป้องกันไม่ให้ยิง request ถ้าอยู่บน Github Pages)
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    const response = await fetch('http://localhost:8002/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ dates: allDates })
+                    });
+
+                    if (response.ok) {
+                        predictions = await response.json();
+                    } else {
+                        throw new Error('API Response Error');
+                    }
+                } else {
+                    console.warn("Skipping AI Prediction Backend because environment is not local.");
+                    document.getElementById('oracle-summary').innerHTML = '<div class="col-span-2 card-warning p-4 rounded-lg">ไม่สามารถใช้ระบบพยากรณ์ AI บน Github Pages ได้ (ต้องรัน Local Backend)</div>';
+                    return;
+                }
+            } catch (err) {
+                console.error("Failed to fetch predictions from Backend:", err);
+                document.getElementById('oracle-summary').innerHTML = `
+                    <div class="col-span-2 card-error p-4 rounded-lg">
+                        <b>🚨 Backend is offline</b>: ไม่สามารถเชื่อมต่อกับ AI Backend (http://localhost:8002) ได้<br>
+                        กรุณารันคำสั่ง <code>python models/main.py</code> ในเครื่องเพื่อดูผลการพยากรณ์
+                    </div>`;
+                return; // หยุดการทำงานถ้าต่อ backend ไม่ได้
+            }
+            // ----------------------------------------------------
+
             const predDemands = [];
             const predSupplys = [];
             const actDemands = [];
             const actSupplys = [];
 
+            // ตัวแปรสำหรับคำนวณ Scarcity Strategy (เอาเฉพาะอนาคต หรือวันที่ล่าสุด)
+            let latestDateStr = allDates[allDates.length - 1];
+            let latestPredD = 0;
+            let latestPredS = 0;
+
             allDates.forEach(d => {
-                const predicted = predictAbsoluteVolume(d);
-                predDemands.push(predicted.predictedDemand);
-                predSupplys.push(predicted.predictedSupply);
+                const pred = predictions[d] || { predictedDemand: 0, predictedSupply: 0 };
+                predDemands.push(pred.predictedDemand);
+                predSupplys.push(pred.predictedSupply);
                 actDemands.push(actualDMap[d] || 0);
                 actSupplys.push(actualSMap[d] || 0);
+
+                if (d === latestDateStr) {
+                    latestPredD = pred.predictedDemand;
+                    latestPredS = pred.predictedSupply;
+                }
             });
 
             const labels = allDates.map(formatDateShort);
@@ -1969,6 +2037,21 @@
 
             const mae_D = countD > 0 ? (totalErrorD / countD).toFixed(1) : 0;
             const mae_S = countS > 0 ? (totalErrorS / countS).toFixed(1) : 0;
+
+            // --- คำนวณ Scarcity Strategy Logic ---
+            let strategyHtml = "";
+            let scarcityRatio = latestPredS > 0 ? (latestPredD / latestPredS) : 0;
+            if (latestPredD === 0 && latestPredS === 0) {
+                strategyHtml = `<div class="card-info p-4 rounded-lg mt-4 col-span-2"><b>ℹ️ กลยุทธ์:</b> ไม่มีแนวโน้มการหาหรือปล่อยโต๊ะในวันที่ ${formatDateFull(latestDateStr)}</div>`;
+            } else if (latestPredD > latestPredS * 1.5) {
+                strategyHtml = `<div class="card-success p-4 rounded-lg mt-4 col-span-2"><b>💎 ตลาดผูกขาด (Monopoly Zone):</b><br>Demand มากกว่า Supply มาก (${scarcityRatio.toFixed(1)} เท่า)! เตรียมอัปราคาและตั้งกติกาเข้มๆ ได้เลย ลูกค้าพร้อมเปย์แน่นอน! (เป้าหมาย: วันที่ ${formatDateFull(latestDateStr)})</div>`;
+            } else if (latestPredD > latestPredS) {
+                strategyHtml = `<div class="card-success p-4 rounded-lg mt-4 col-span-2"><b>🔥 ตลาดขาดแคลน (High Demand):</b><br>Demand ชนะ Supply เล็กน้อย (${scarcityRatio.toFixed(1)} เท่า) โต๊ะยังมีความต้องการสูง สามารถตั้งราคามาตรฐานหรือเพิ่มเล็กน้อยได้ (เป้าหมาย: วันที่ ${formatDateFull(latestDateStr)})</div>`;
+            } else if (latestPredS > latestPredD * 1.5) {
+                strategyHtml = `<div class="card-error p-4 rounded-lg mt-4 col-span-2"><b>🚨 ตลาดล้น (Oversupply):</b><br>Supply ล้นตลาด (${(latestPredS / latestPredD).toFixed(1)} เท่า)! แม่ค้าเทขายระนาว แนะนำให้รีบปล่อยของ หรือจัดโปรโมชั่นก่อนของค้างมือ (เป้าหมาย: วันที่ ${formatDateFull(latestDateStr)})</div>`;
+            } else {
+                strategyHtml = `<div class="card-warning p-4 rounded-lg mt-4 col-span-2"><b>⚖️ ตลาดสมดุล (Balanced):</b><br>Demand และ Supply สูสีกัน ควรจับตาสถานการณ์แบบ Real-time และชิงจังหวะตั้งราคาที่เหมาะสม (เป้าหมาย: วันที่ ${formatDateFull(latestDateStr)})</div>`;
+            }
 
             createChart('chart-oracle-timeline', {
                 type: 'line',
@@ -1999,14 +2082,15 @@
                 <div class="absolute right-[-10px] top-[-10px] text-5xl opacity-20">🔮</div>
                 <h4 class="font-bold mb-2 text-red-700">🎯 ความแม่นยำของ Model (Demand)</h4>
                 <p class="text-sm text-gray-700">ค่าความคลาดเคลื่อนเฉลี่ย (MAE): <br><span class="text-2xl font-bold text-red-600 border-b-2 border-red-200">±${mae_D} โต๊ะ/วัน</span></p>
-                <p class="text-xs text-red-600 mt-2 opacity-80">*ค่ายิ่งน้อยแสดงว่า AI ทายได้แม่นยำมาก ฐานอ้างอิง Baseline: ${ORACLE_CONFIG.baseline.demand}</p>
+                <p class="text-xs text-red-600 mt-2 opacity-80">*ค่ายิ่งน้อยแสดงว่า AI ทายได้แม่นยำมาก</p>
             </div>
             <div class="card-info p-4 rounded-lg relative overflow-hidden">
                 <div class="absolute right-[-10px] top-[-10px] text-5xl opacity-20">🪄</div>
                 <h4 class="font-bold mb-2 text-blue-700">🎯 ความแม่นยำของ Model (Supply)</h4>
                 <p class="text-sm text-gray-700">ค่าความคลาดเคลื่อนเฉลี่ย (MAE): <br><span class="text-2xl font-bold text-blue-600 border-b-2 border-blue-200">±${mae_S} โต๊ะ/วัน</span></p>
-                <p class="text-xs text-blue-600 mt-2 opacity-80">*ค่ายิ่งน้อยแสดงว่า AI ทายได้แม่นยำมาก ฐานอ้างอิง Baseline: ${ORACLE_CONFIG.baseline.supply}</p>
+                <p class="text-xs text-blue-600 mt-2 opacity-80">*ค่ายิ่งน้อยแสดงว่า AI ทายได้แม่นยำมาก</p>
             </div>
+            ${strategyHtml}
             `;
         }
 
