@@ -633,6 +633,29 @@
                     <canvas id="chart-oracle-timeline"></canvas>
                 </div>
 
+                <!-- 🔮 กล่องแสดงผลเมื่อคลิกจุดบนกราฟ -->
+                <div id="oracle-click-detail" class="mb-6 hidden">
+                    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border-l-4 border-purple-500 p-5 rounded-lg shadow-md">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-2xl">🔮</span>
+                            <h4 class="font-bold text-purple-800 text-lg" id="oracle-click-title">ผลการทำนาย</h4>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white/70 rounded-lg p-4 border border-red-200">
+                                <p class="text-sm text-gray-500 mb-1">🔥 ทำนาย Demand (ความต้องการ)</p>
+                                <p class="text-3xl font-bold text-red-600" id="oracle-click-demand">-</p>
+                                <p class="text-xs text-gray-400 mt-1" id="oracle-click-demand-actual"></p>
+                            </div>
+                            <div class="bg-white/70 rounded-lg p-4 border border-blue-200">
+                                <p class="text-sm text-gray-500 mb-1">📦 ทำนาย Supply (โต๊ะที่จะมี)</p>
+                                <p class="text-3xl font-bold text-blue-600" id="oracle-click-supply">-</p>
+                                <p class="text-xs text-gray-400 mt-1" id="oracle-click-supply-actual"></p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-purple-700 mt-3" id="oracle-click-strategy"></p>
+                    </div>
+                </div>
+
                 <div id="oracle-summary" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </div>
 
@@ -1097,7 +1120,22 @@
             const oracleSel = document.getElementById('oracle-month-select');
             if (oracleSel) {
                 const uniqueMonths = [...new Set([...dfDemand.map(r => String(dateOnly(r.Post_Date)).substring(0, 7)), ...dfSupply.map(r => String(dateOnly(r.Post_Date)).substring(0, 7))].filter(x => x && x.length === 7))].sort().reverse();
-                oracleSel.innerHTML = '<option value="all">ดูทั้งหมด (All-Time)</option>' + uniqueMonths.map(m => `<option value="${m}">${THAI_M_DICT[m.substring(5, 7)]} ${m.substring(0, 4)}</option>`).join('');
+
+                // 🔮 สร้างเดือนอนาคต (6 เดือนข้างหน้า)
+                const futureMonths = [];
+                const now = new Date();
+                for (let i = 1; i <= 6; i++) {
+                    const futDate = new Date(now.getFullYear(), now.getMonth() + i, 1);
+                    const ym = `${futDate.getFullYear()}-${String(futDate.getMonth() + 1).padStart(2, '0')}`;
+                    if (!uniqueMonths.includes(ym)) futureMonths.push(ym);
+                }
+                // เดือนปัจจุบัน (ถ้ายังไม่มีในข้อมูล)
+                const curMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                if (!uniqueMonths.includes(curMonth)) futureMonths.unshift(curMonth);
+
+                const futureOptions = futureMonths.map(m => `<option value="${m}">🔮 ${THAI_M_DICT[m.substring(5, 7)] || m.substring(5, 7)} ${m.substring(0, 4)} (ทำนาย)</option>`).join('');
+                const pastOptions = uniqueMonths.map(m => `<option value="${m}">${THAI_M_DICT[m.substring(5, 7)]} ${m.substring(0, 4)}</option>`).join('');
+                oracleSel.innerHTML = '<option value="all">ดูทั้งหมด (All-Time)</option>' + futureOptions + pastOptions;
             }
         }
 
@@ -1949,13 +1987,26 @@
         // ===== Oracle Tab =====
         async function renderTabOracle() {
             renderedTabs.add('eda-oracle');
+            document.getElementById('oracle-click-detail').classList.add('hidden');
 
             const monthVal = document.getElementById('oracle-month-select')?.value || 'all';
 
-            let allDates = [...new Set([...demandDedupGlobal.map(r => dateOnly(r.Wanted_Table_Date)), ...supplyHaveDedupGlobal.map(r => dateOnly(r.Supply_Table_Date))])].filter(d => Boolean(d) && d.length === 10).sort();
+            // 🔮 ดึงวันที่จากข้อมูลจริง
+            let existingDates = [...new Set([...demandDedupGlobal.map(r => dateOnly(r.Wanted_Table_Date)), ...supplyHaveDedupGlobal.map(r => dateOnly(r.Supply_Table_Date))])].filter(d => Boolean(d) && d.length === 10).sort();
 
+            let allDates = [];
             if (monthVal !== 'all') {
-                allDates = allDates.filter(d => d.startsWith(monthVal));
+                // สร้างวันที่ทั้งเดือนที่เลือก (1-28/30/31)
+                const [yyyy, mm] = monthVal.split('-').map(Number);
+                const daysInMonth = new Date(yyyy, mm, 0).getDate();
+                const monthDates = [];
+                for (let d = 1; d <= daysInMonth; d++) {
+                    monthDates.push(`${yyyy}-${String(mm).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
+                }
+                // รวมวันที่จากข้อมูลจริงในเดือนนั้น + วันที่สร้างใหม่
+                allDates = [...new Set([...existingDates.filter(d => d.startsWith(monthVal)), ...monthDates])].sort();
+            } else {
+                allDates = existingDates;
             }
 
             if (allDates.length === 0) {
@@ -2000,6 +2051,7 @@
 
             const predDemands = [];
             const predSupplys = [];
+            const predEvents = [];
             const actDemands = [];
             const actSupplys = [];
 
@@ -2009,9 +2061,10 @@
             let latestPredS = 0;
 
             allDates.forEach(d => {
-                const pred = predictions[d] || { predictedDemand: 0, predictedSupply: 0 };
+                const pred = predictions[d] || { predictedDemand: 0, predictedSupply: 0, events: 'วันธรรมดา' };
                 predDemands.push(pred.predictedDemand);
                 predSupplys.push(pred.predictedSupply);
+                predEvents.push(pred.events || 'วันธรรมดา');
                 actDemands.push(actualDMap[d] || 0);
                 actSupplys.push(actualSMap[d] || 0);
 
@@ -2068,11 +2121,36 @@
                     responsive: true,
                     plugins: {
                         title: { display: true, text: 'Oracle AI: เปรียบเทียบค่าพยากรณ์ vs ตลาดจริง', font: { size: 15, weight: 'bold', family: 'Sarabun' } },
-                        tooltip: { mode: 'index', intersect: false }
+                        tooltip: { 
+                            mode: 'index', 
+                            intersect: false,
+                            callbacks: {
+                                beforeBody: function(context) {
+                                    return `📌 ปัจจัย: ${predEvents[context[0].dataIndex]}`;
+                                }
+                            }
+                        }
                     },
                     scales: {
                         x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: true, maxTicksLimit: 30 } },
                         y: { title: { display: true, text: 'ปริมาณโต๊ะ (Volume)' }, beginAtZero: true }
+                    },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const dataIndex = elements[0].index;
+                            const dStr = allDates[dataIndex];
+                            document.getElementById('oracle-click-detail').classList.remove('hidden');
+                            document.getElementById('oracle-click-title').innerText = `ผลการทำนายวันที่ ${formatDateFull(dStr)}`;
+                            document.getElementById('oracle-click-demand').innerText = predDemands[dataIndex] || 0;
+                            document.getElementById('oracle-click-supply').innerText = predSupplys[dataIndex] || 0;
+                            
+                            const actD = actDemands[dataIndex] || 0;
+                            const actS = actSupplys[dataIndex] || 0;
+                            document.getElementById('oracle-click-demand-actual').innerText = actD > 0 ? `(ข้อมูลจริง: ${actD})` : '';
+                            document.getElementById('oracle-click-supply-actual').innerText = actS > 0 ? `(ข้อมูลจริง: ${actS})` : '';
+                            
+                            document.getElementById('oracle-click-strategy').innerText = `📌 ปัจจัยที่มีผล: ${predEvents[dataIndex]}`;
+                        }
                     }
                 }
             });
