@@ -422,7 +422,7 @@
 2023-12-17,16:17,SH,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2023-12-17,อาทิตย์,,2,True,หาคนปล่อยโต๊ะ # 2 โต๊ะคับบ,False,False,False,False,False,False,False,False,False,False,False,False,True,False,วันธรรมดา,0,0
 2023-12-17,16:23,Kingz,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2023-12-17,อาทิตย์,,1,False,หาคนปล่อยโต๊ะ # ครับ(ไม่เอาด้านบน),False,False,False,False,False,False,False,False,False,False,False,False,True,False,วันธรรมดา,0,0
 2023-12-17,17:48,Jennn,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2023-12-17,อาทิตย์,,1,False,หาโต๊ะรีเพลย์ครับ,False,False,False,False,False,False,False,False,False,False,False,False,True,False,วันธรรมดา,0,0
-2023-12-17,18:56,Mkk,จ้างเฝ้าโต๊ะ,วันปกติ,Bennington,หลังมอ,2024-01-02,อังคาร,,1,False,หาคนนั่งเบน2คนค่ะ,False,False,True,False,True,False,False,False,False,False,False,False,True,False,สิ้นเดือน + 7วันก่อนสอบ,1,1
+2023-12-17,18:56,Mkk,จ้างเฝ้าโต๊ะ,รับปริญญา,Bennington,หลังมอ,2023-12-17,อาทิตย์,,1,False,หาคนนั่งเบน2คนค่ะ,False,False,False,False,False,False,False,False,False,False,False,True,True,False,เทศกาล,1,0
 2023-12-17,19:14,น้ำใส จุ๊บมั๊วะ,หาโต๊ะ,รับปริญญา,Bennington,หลังมอ,2023-12-17,อาทิตย์,,1,False,หาโต๊ะ เบน สองโต๊ะค่ะ,False,False,False,False,False,False,False,False,False,False,False,True,True,False,เทศกาล,1,0
 2023-12-17,19:21,mj,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2023-12-17,อาทิตย์,,1,False,หาโต๊ะรีเพลค่ะ,False,False,False,False,False,False,False,False,False,False,False,False,True,False,วันธรรมดา,0,0
 2023-12-17,19:28,แบมมมม,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2023-12-17,อาทิตย์,,2,True,หาโต๊ะ#2โต๊ะค่ะไม่เอาด้านบน,False,False,False,False,False,False,False,False,False,False,False,False,True,False,วันธรรมดา,0,0
@@ -1066,8 +1066,7 @@
 2024-06-15,16:12,babypp,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2024-06-15,เสาร์,,1,False,หาโต๊ะ# โซนกลางค่ะ,False,True,False,False,False,False,False,True,True,False,False,False,False,True,เสาร์ + 7วันก่อนเปิดเทอม + ปิดเทอม,2,1
 2024-06-15,17:24,เอลโม่,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-06-15,เสาร์,,1,False,มีใครปล่อยต่อเครื่อง Relx มั้ยคะ,False,True,False,False,False,False,False,True,True,False,True,False,False,True,เสาร์ + คอนเสิร์ต + 7วันก่อนเปิดเทอม + ปิดเทอม,3,1
 2024-06-15,17:27,ษา,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2024-06-15,เสาร์,,1,False,มีใครปล่อยโต๊ะ hashtag ไหมคับ,False,True,False,False,False,False,False,True,True,False,False,False,False,True,เสาร์ + 7วันก่อนเปิดเทอม + ปิดเทอม,2,1
-2024-06-15,19:33,ออปโป้,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-06-04,อังคาร,,1,False,หาโต๊ะรีเพลย์4-5คนครับ,False,False,False,False,False,False,False,True,False,False,False,False,False,True,ปิดเทอม,0,1
-2024-06-15,19:33,ออปโป้,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-06-05,พุธ,,1,False,หาโต๊ะรีเพลย์4-5คนครับ,False,False,False,False,False,False,False,True,False,False,False,False,False,True,ปิดเทอม,0,1
+2024-06-15,19:33,ออปโป้,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-07-04,พฤหัสบดี,,1,False,หาโต๊ะรีเพลย์4-5คนครับ,False,False,False,False,False,False,False,False,False,False,False,False,False,True,วันธรรมดา,0,0
 2024-06-15,20:01,มูมู่,จ้างเฝ้าโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-06-15,เสาร์,,1,False,หาคนนั่งโต๊ะรีเพค่า ตอนนี้,False,True,False,False,False,False,False,True,True,False,True,False,False,True,เสาร์ + คอนเสิร์ต + 7วันก่อนเปิดเทอม + ปิดเทอม,3,1
 2024-06-16,14:04,JJJJJ,จ้างเฝ้าโต๊ะ,วันปกติ,Rusty,ในเมือง,2024-06-16,อาทิตย์,,1,False,หาคนนั่งโต๊ะรัสตี้ 2 ชม.ค่า https://line.me/ti/p/6HbHXSm84B,False,False,False,False,False,False,False,True,True,False,False,False,False,True,7วันก่อนเปิดเทอม + ปิดเทอม,1,1
 2024-06-17,19:15,Clisss🌻,จ้างเฝ้าโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-06-17,จันทร์,,1,False,หาคนนั่งโต๊ะรีเพลครับไม่เกิน 100,False,False,False,False,False,False,False,False,False,True,False,False,False,True,7วันหลังเปิดเทอม,0,1
@@ -1338,7 +1337,6 @@
 2024-08-16,18:55,Tk.,จ้างเฝ้าโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-08-16,ศุกร์,,1,False,หาคนนั่งโต๊ะรีเพล 19.40-21.00 ค่ะ,True,False,False,False,False,False,False,False,False,False,False,False,False,True,ศุกร์,1,0
 2024-08-16,19:14,ปป,จ้างเฝ้าโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-08-16,ศุกร์,,1,False,หาคนนั่งรีเพลถึง21.00ค่ะ,True,False,False,False,False,False,False,False,False,False,False,False,False,True,ศุกร์,1,0
 2024-08-16,23:20,Christmass,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2024-08-08,พฤหัสบดี,,2,True,หา # วันเสาร์โซนกลาง 2 โต๊ะ8-9คนค่ะ,False,False,False,True,False,False,False,False,False,False,False,False,False,True,ช่วงสอบ,0,1
-2024-08-16,23:20,Christmass,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2024-08-09,ศุกร์,,2,True,หา # วันเสาร์โซนกลาง 2 โต๊ะ8-9คนค่ะ,True,False,False,False,False,True,False,False,False,False,False,False,False,True,ศุกร์ + 7วันหลังสอบมิดเทอม,2,0
 2024-08-17,11:24,Christmass,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2024-08-17,เสาร์,,2,True,หาคนปล่อยโต๊ะ#วันนี้2โต๊ะ,False,True,False,False,False,False,False,False,False,False,False,False,False,True,เสาร์,1,0
 2024-08-17,15:15,P..,หาโต๊ะ,วันปกติ,Rusty,ในเมือง,2024-08-17,เสาร์,,1,False,หาโต๊ะรัสตี้ค่ะ,False,True,False,False,False,False,False,False,False,False,False,False,False,True,เสาร์,1,0
 2024-08-17,18:16,ง้อง,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-08-17,เสาร์,,1,False,หาโต๊ะรีวันนี้ค่า,False,True,False,False,False,False,False,False,False,False,False,False,False,True,เสาร์,1,0
@@ -1813,7 +1811,7 @@
 2024-11-23,19:29,อา,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2024-11-23,เสาร์,,1,False,หาโต๊ะ #,False,True,False,False,False,False,False,False,False,True,False,False,False,True,เสาร์ + 7วันหลังเปิดเทอม,1,1
 2024-11-23,19:40,อา,จ้างเฝ้าโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2024-11-23,เสาร์,,1,False,หาคนนั่งโต๊ะ # ค่ะ,False,True,False,False,False,False,False,False,False,True,False,False,False,True,เสาร์ + 7วันหลังเปิดเทอม,1,1
 2024-11-23,21:57,tuu,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-11-23,เสาร์,,1,False,มีใครปล่อยโต๊ะ รีมั้ยคะ,False,True,False,False,False,False,False,False,False,True,False,False,False,True,เสาร์ + 7วันหลังเปิดเทอม,1,1
-2024-11-24,14:45,Mumuuu,จ้างเฝ้าโต๊ะ,วันปกติ,,,2024-12-01,อาทิตย์,,1,False,หาคนนั่งโต๊ะด้วยกัน 1 คนค่ะ Yew x Narbaan โต๊ะ1400/4คน 🙇‍♀️😍,False,False,True,False,False,False,False,False,False,False,False,False,False,True,สิ้นเดือน,1,0
+2024-11-24,14:45,Mumuuu,จ้างเฝ้าโต๊ะ,วันปกติ,,,2024-11-24,อาทิตย์,,1,False,หาคนนั่งโต๊ะด้วยกัน 1 คนค่ะ Yew x Narbaan โต๊ะ1400/4คน 🙇‍♀️😍,False,False,False,False,False,False,False,False,False,True,False,False,False,True,7วันหลังเปิดเทอม,0,1
 2024-11-24,19:15,ภูเขาสองลูก,"จ้างเฝ้าโต๊ะ, จ้างวอร์กอิน",วันปกติ,,,2024-11-24,อาทิตย์,,1,False,หาคนนั่งจองโต๊ะ งบ 100ค่ะ,False,False,False,False,False,False,False,False,False,True,False,False,False,True,7วันหลังเปิดเทอม,0,1
 2024-11-29,11:04,ตา,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-11-29,ศุกร์,,4,True,หาโต๊ะ รีเพล 4โต๊ะ,True,False,True,False,False,False,False,False,False,False,False,False,False,True,ศุกร์ + สิ้นเดือน,2,0
 2024-11-29,11:07,nonamee,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-11-29,ศุกร์,,2,True,หาโต๊ะรีเพลโซนม่วง 2 โต๊ะค่า,True,False,True,False,False,False,False,False,False,False,False,False,False,True,ศุกร์ + สิ้นเดือน,2,0
@@ -1965,7 +1963,7 @@
 2024-12-21,17:24,คคคคคคร,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-12-21,เสาร์,,1,False,หาโต๊ะรีค่ะ,False,True,False,False,False,False,False,False,False,False,False,False,False,True,เสาร์,1,0
 2024-12-21,18:37,ดดดดดด,จ้างเฝ้าโต๊ะ,วันปกติ,Replayground,หลังมอ,2024-12-21,เสาร์,,1,False,หาคนนั่งรีตอนนี้ช,False,True,False,False,False,False,False,False,False,False,False,False,False,True,เสาร์,1,0
 2024-12-21,20:13,Jinny,จ้างวอร์กอิน,วันปกติ,Jinlong,ในเมือง,2024-12-21,เสาร์,,1,False,หาคนจองจินหลงค่ะ,False,True,False,False,False,False,False,False,False,False,False,False,False,True,เสาร์,1,0
-2024-12-24,01:24,ยย,หาโต๊ะ,คริสมาส,Hashtags (#),หลังมอ,2024-12-24,อังคาร,,1,False,หาโต๊ะ# วันคริสต์มาสค่ะ,False,False,False,False,False,False,False,False,False,False,False,True,False,True,เทศกาล,1,0
+2024-12-24,01:24,ยย,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2024-12-24,อังคาร,,1,False,หาโต๊ะ# วันคริสต์มาสค่ะ,False,False,False,False,False,False,False,False,False,False,False,False,False,True,วันธรรมดา,0,0
 2024-12-24,11:38,atom,หาโต๊ะ,คริสมาส,Hashtags (#),หลังมอ,2024-12-25,พุธ,,1,False,หาโต๊ะ # พรุ่งนี้คับ☺️,False,False,True,False,False,False,False,False,False,False,False,True,False,True,เทศกาล + สิ้นเดือน,2,0
 2024-12-24,15:55,atom,หาโต๊ะ,คริสมาส,Hashtags (#),หลังมอ,2024-12-25,พุธ,,1,False,หาโต๊ะ # พรุ่งนี้คับ🥹,False,False,True,False,False,False,False,False,False,False,False,True,False,True,เทศกาล + สิ้นเดือน,2,0
 2024-12-24,16:56,Plxy,หาโต๊ะ,คริสมาส,Replayground,หลังมอ,2024-12-25,พุธ,,1,False,หาโต๊ะรีเพลพรุ่งนี้ค่ะ😭,False,False,True,False,False,False,False,False,False,False,False,True,False,True,เทศกาล + สิ้นเดือน,2,0
@@ -2643,7 +2641,7 @@
 2025-03-30,13:51,พี่หมูอ้วนแบ๊ว,หาโต๊ะ,สงกรานต์,Replayground,หลังมอ,2025-03-30,อาทิตย์,,1,False,หาโต๊ะรีค่ะ ราคาคุยกันได้เลยย,False,False,True,False,False,False,True,False,False,False,False,True,False,True,เทศกาล + 12วันก่อนปิดเทอม + สิ้นเดือน,3,0
 2025-03-30,16:39,Jeiwuuwuuw,หาโต๊ะ,สงกรานต์,Replayground,หลังมอ,2025-03-30,อาทิตย์,,1,True,หาโต๊ะรีเพลโซนเปียก 1 โต๊ะวันนี้ครับ,False,False,True,False,False,False,True,False,False,False,False,True,False,True,เทศกาล + 12วันก่อนปิดเทอม + สิ้นเดือน,3,0
 2025-03-30,16:41,Juji,จ้างเฝ้าโต๊ะ,สงกรานต์,Replayground,หลังมอ,2025-03-30,อาทิตย์,,1,False,หาคนนั่งโต๊ะรีเพลค่ะ,False,False,True,False,False,False,True,False,False,False,False,True,False,True,เทศกาล + 12วันก่อนปิดเทอม + สิ้นเดือน,3,0
-2025-03-30,17:02,><,จ้างเฝ้าโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2025-04-01,อังคาร,,1,False,หาคนนั่งโต๊ะ # สัก1-2 ชมงับ ราคาเป็นมิตร,False,False,True,False,False,False,False,True,False,False,False,True,False,True,เทศกาล + สิ้นเดือน + ปิดเทอม,2,1
+2025-03-30,17:02,><,จ้างเฝ้าโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2025-03-30,อาทิตย์,,1,False,หาคนนั่งโต๊ะ # สัก1-2 ชมงับ ราคาเป็นมิตร,False,False,True,False,False,False,True,False,False,False,False,True,False,True,เทศกาล + 12วันก่อนปิดเทอม + สิ้นเดือน,3,0
 2025-03-30,18:21,เป็นแมวเป้า,หาโต๊ะ,สงกรานต์,"Hashtags (#), Replayground",หลังมอ,2025-03-30,อาทิตย์,,1,False,หาโต้ะโซนเปียก รี แฮซ ได้หมด ด่วน,False,False,True,False,False,False,True,False,False,False,False,True,False,True,เทศกาล + 12วันก่อนปิดเทอม + สิ้นเดือน,3,0
 2025-03-30,18:22,Biw🍅,หาโต๊ะ,สงกรานต์,Replayground,หลังมอ,2025-03-30,อาทิตย์,,1,False,หาโต๊ะรีเพล โซนเปียกงับวันนี้งับ,False,False,True,False,False,False,True,False,False,False,False,True,False,True,เทศกาล + 12วันก่อนปิดเทอม + สิ้นเดือน,3,0
 2025-03-30,18:28,———,จ้างเฝ้าโต๊ะ,วันปกติ,Shade,ในเมือง,2025-03-30,อาทิตย์,,1,False,หาคนไปเอาโต๊ะshadeก่อน2ทุ่มค่ะ,False,False,True,False,False,False,True,False,False,False,False,False,False,True,12วันก่อนปิดเทอม + สิ้นเดือน,2,0
@@ -2810,7 +2808,7 @@
 2025-04-10,16:52,明,หาโต๊ะ,สงกรานต์,Replayground,หลังมอ,2025-04-10,พฤหัสบดี,,1,False,หาโต๊ะรีเพลวันนี้ค่า,False,False,False,False,False,False,False,True,False,False,False,True,False,True,เทศกาล + ปิดเทอม,1,1
 2025-04-10,17:07,อุ๋งอุ๋ง,หาโต๊ะ,สงกรานต์,Replayground,หลังมอ,2025-04-12,เสาร์,,1,False,หาโต๊ะรีเพลวันที่12ค่ะ,False,True,False,False,False,False,False,True,False,False,False,True,False,True,เทศกาล + เสาร์ + ปิดเทอม,2,1
 2025-04-10,18:08,เมี๊ยว,จ้างเฝ้าโต๊ะ,สงกรานต์,Replayground,หลังมอ,2025-04-10,พฤหัสบดี,,1,False,หาคนนั่งโต๊ะรีเพค่ะ,False,False,False,False,False,False,False,True,False,False,False,True,False,True,เทศกาล + ปิดเทอม,1,1
-2025-04-10,18:16,เจเจเจ,หาโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2025-04-02,พุธ,,1,True,หาโต๊ะ # 1 โต๊ะ ไป2คนครับ,False,False,True,False,False,False,False,True,False,False,False,True,False,True,เทศกาล + สิ้นเดือน + ปิดเทอม,2,1
+2025-04-10,18:16,เจเจเจ,หาโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2025-04-10,พฤหัสบดี,,1,True,หาโต๊ะ # 1 โต๊ะ ไป2คนครับ,False,False,False,False,False,False,False,True,False,False,False,True,False,True,เทศกาล + ปิดเทอม,1,1
 2025-04-10,18:21,sunday,หาโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2025-04-12,เสาร์,,1,False,หาโต๊ะ# วันที่12ค่ะ ราคาไม่สร้างบ้าน🥹,False,True,False,False,False,False,False,True,False,False,False,True,False,True,เทศกาล + เสาร์ + ปิดเทอม,2,1
 2025-04-10,19:18,so proud of you,หาโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2025-04-10,พฤหัสบดี,,1,False,หาโต๊ะ # วันนี้ด่วนค่ะ,False,False,False,False,False,False,False,True,False,False,False,True,False,True,เทศกาล + ปิดเทอม,1,1
 2025-04-10,19:19,Smm,จ้างเฝ้าโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2025-04-10,พฤหัสบดี,,1,False,หาคนนั่งโต๊ะให้ค่ะ 1ชม. #,False,False,False,False,False,False,False,True,False,False,False,True,False,True,เทศกาล + ปิดเทอม,1,1
@@ -3490,7 +3488,7 @@
 2025-07-18,19:49,ตา,จ้างเฝ้าโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-07-18,ศุกร์,,1,False,หาคนนั่ง#ค่ะ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-07-18,20:40,👁️👄👁️,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-07-19,เสาร์,,1,False,มีใครปล่อยโต๊ะ#พรุ่งนี้มั้ยคะ,False,True,False,False,False,False,False,False,False,False,False,False,False,False,เสาร์,1,0
 2025-07-18,20:47,งองแง,จ้างเฝ้าโต๊ะ,วันปกติ,,หลังมอ,2025-07-18,ศุกร์,,1,False,หาคนนั่งหลังมอค่า,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
-2025-07-18,20:55,น้ำใส จุ๊บมั๊วะ,จ้างเฝ้าโต๊ะ,วันปกติ,Sigma,ในเมือง,2025-08-02,เสาร์,,1,False,หาคนนั่งซิกตอนนี้ 2คนค่ะมีโตะแล้ว,False,True,True,False,False,False,False,False,False,False,False,False,False,False,เสาร์ + สิ้นเดือน,2,0
+2025-07-18,20:55,น้ำใส จุ๊บมั๊วะ,จ้างเฝ้าโต๊ะ,วันปกติ,Sigma,ในเมือง,2025-07-18,ศุกร์,,1,False,หาคนนั่งซิกตอนนี้ 2คนค่ะมีโตะแล้ว,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-07-18,21:02,qcyz,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-07-18,ศุกร์,,1,False,หาโต๊ะ#ค่ะ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-07-18,21:08,Ang,หาโต๊ะ,วันปกติ,Sigma,ในเมือง,2025-07-18,ศุกร์,,1,False,มีใครปล่อยโต๊ะ sigma มั้ยคะ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-07-18,21:10,แม้ว,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-07-18,ศุกร์,,1,False,มีใครปล่อยโต๊ะ#มั้ยคะ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
@@ -4582,7 +4580,7 @@
 2025-10-03,07:47,Thanapol.07.,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-10-03,ศุกร์,,2,True,หาโต๊ะ#วันนี้2โต๊ะครับ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-10-03,10:14,Jude,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-10-03,ศุกร์,A,1,True,หาโต๊ะ # โซนA 1โต๊ะครับ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-10-03,10:39,แง,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-10-04,เสาร์,,1,False,หาโต๊ะ# เสานี้ค่ะ,False,True,False,False,False,False,False,False,False,False,False,False,False,False,เสาร์,1,0
-2025-10-03,11:32,TTFF,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-10-02,พฤหัสบดี,,1,False,หาโต๊ะ# โต๊ะเดียว สำหรับ2คนครับ โซนไหนก็ได้ โซฟาจะดีมาก,False,False,True,False,False,False,False,False,False,False,False,False,False,False,สิ้นเดือน,1,0
+2025-10-03,11:32,TTFF,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-10-03,ศุกร์,,1,False,หาโต๊ะ# โต๊ะเดียว สำหรับ2คนครับ โซนไหนก็ได้ โซฟาจะดีมาก,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-10-03,13:49,HL,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-10-03,ศุกร์,,1,False,หาโต๊ะ # วันนี้ค่ะ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-10-03,15:33,แก้ม,หาโต๊ะ,วันปกติ,B2SIT,หลังมอ,2025-10-03,ศุกร์,,1,False,มีใครปล่อยโต๊ะบีทูวันนี้มั้ยคะ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-10-03,16:08,sis,จ้างเฝ้าโต๊ะ,วันปกติ,Rusty,ในเมือง,2025-10-03,ศุกร์,,1,False,หาคนนั่งโต๊ะ รัสตี้วันนี้ค่ะ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
@@ -5206,7 +5204,7 @@
 2025-11-09,14:08,อ๊ะอิ๋ว,จ้างเฝ้าโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-11-09,อาทิตย์,,1,False,หาคนนั่ง#ค่ะ ราคาไม่เกิน100ค่ะ,False,False,False,False,False,False,True,False,False,False,False,False,False,False,12วันก่อนปิดเทอม,1,0
 2025-11-09,18:07,มะหนุย,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-11-09,อาทิตย์,A,1,False,หาโต๊ะ # วันนี้ โซน A,False,False,False,False,False,False,True,False,False,False,False,False,False,False,12วันก่อนปิดเทอม,1,0
 2025-11-09,18:30,…^*,จ้างเฝ้าโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-11-09,อาทิตย์,,1,False,หาคนนั่งโต๊ะ #,False,False,False,False,False,False,True,False,False,False,False,False,False,False,12วันก่อนปิดเทอม,1,0
-2025-11-09,19:12,เป็นแมวเป้า,จ้างเฝ้าโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-11-01,เสาร์,,1,False,หาคนนั่ง # 1 คนค่ะ 1 ชั่วโมง,False,True,True,True,False,False,True,False,False,False,False,False,False,False,เสาร์ + 12วันก่อนปิดเทอม + สิ้นเดือน + ช่วงสอบ,3,1
+2025-11-09,19:12,เป็นแมวเป้า,จ้างเฝ้าโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-11-09,อาทิตย์,,1,False,หาคนนั่ง # 1 คนค่ะ 1 ชั่วโมง,False,False,False,False,False,False,True,False,False,False,False,False,False,False,12วันก่อนปิดเทอม,1,0
 2025-11-09,21:06,007T,จ้างเฝ้าโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-11-09,อาทิตย์,,1,False,หาคนนั่ง # วันนี้ครับ,False,False,False,False,False,False,True,False,False,False,False,False,False,False,12วันก่อนปิดเทอม,1,0
 2025-11-10,15:18,ิิิ,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-11-14,ศุกร์,A,1,False,หาโซนA #ศุกร์นี้นะ,True,False,False,False,False,False,False,True,False,False,False,False,False,False,ศุกร์ + ปิดเทอม,1,1
 2025-11-10,16:24,q1,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-11-14,ศุกร์,,1,False,หา#ศุกร์นี้ครับ,True,False,False,False,False,False,False,True,False,False,False,False,False,False,ศุกร์ + ปิดเทอม,1,1
@@ -5866,7 +5864,7 @@
 2025-12-18,21:59,Kkkkkkooooo,หาโต๊ะ,วันปกติ,B2SIT,หลังมอ,2025-12-19,ศุกร์,,1,False,หาโต๊ะบีทูพรุ่งนี้งับบบบ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-12-18,22:20,Kkkkkkooooo,หาโต๊ะ,วันปกติ,B2SIT,หลังมอ,2025-12-19,ศุกร์,,1,False,หาโต๊ะบีทูพรุ่งนี้งับบบบราคาไม่จำกัด,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-12-18,22:24,Earthhhh,หาโต๊ะ,รับปริญญา,Hashtags (#),หลังมอ,2025-12-19,ศุกร์,,1,False,หาโต๊ะ#พรุ่งนี้,True,False,False,False,False,False,False,False,False,False,False,True,False,False,เทศกาล + ศุกร์,2,0
-2025-12-18,22:25,Guh,หาโต๊ะ,วันปกติ,Picasso,หลังมอ,2025-12-10,พุธ,,1,False,หาโต๊ะปิกัส10 คนค่า,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
+2025-12-18,22:25,Guh,หาโต๊ะ,วันปกติ,Picasso,หลังมอ,2025-12-18,พฤหัสบดี,,1,False,หาโต๊ะปิกัส10 คนค่า,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
 2025-12-18,23:38,GYSX,หาโต๊ะ,รับปริญญา,Hashtags (#),หลังมอ,2025-12-19,ศุกร์,,1,False,หาโต๊ะ # พน,True,False,False,False,False,False,False,False,False,False,False,True,False,False,เทศกาล + ศุกร์,2,0
 2025-12-19,00:08,hh,หาโต๊ะ,วันปกติ,B2SIT,หลังมอ,2025-12-19,ศุกร์,,1,False,หาโต๊ะบีทูค่ะ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-12-19,01:11,mamipoko,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2025-12-26,ศุกร์,A,5,True,หาโต๊ะ#5โต๊ะ โซนA วันที่26ครับ ถ้ามีจะดีใจมาก🤟🏻,True,False,True,False,False,False,False,False,False,False,False,False,False,False,ศุกร์ + สิ้นเดือน,2,0
@@ -5875,7 +5873,7 @@
 2025-12-19,03:21,🥰🥰🫶🏻🫶🏻🫶🏻,หาโต๊ะ,รับปริญญา,Hashtags (#),หลังมอ,2025-12-19,ศุกร์,A,1,False,หาโต๊ะ# โซนa วันนี้ค่ะ,True,False,False,False,False,False,False,False,False,False,False,True,False,False,เทศกาล + ศุกร์,2,0
 2025-12-19,05:04,Earthhhh,หาโต๊ะ,รับปริญญา,Hashtags (#),หลังมอ,2025-12-19,ศุกร์,,3,True,หาโต๊ะ#3โต๊ะวันที่19,True,False,False,False,False,False,False,False,False,False,False,True,False,False,เทศกาล + ศุกร์,2,0
 2025-12-19,05:20,Jamie🫦,หาโต๊ะ,รับปริญญา,Hashtags (#),หลังมอ,2025-12-19,ศุกร์,,1,False,หาโต๊ะ #วันนี้ ค่ะ,True,False,False,False,False,False,False,False,False,False,False,True,False,False,เทศกาล + ศุกร์,2,0
-2025-12-19,08:58,TD.,จ้างเฝ้าโต๊ะ,วันปกติ,Jinlong,ในเมือง,2025-12-30,อังคาร,,1,False,วันนี้หาคนนั่งโต๊ะ จินหลง 30-1ชมครับ https://line.me/ti/p/3tEAtPaAAr,False,False,True,False,False,False,False,False,False,False,False,False,False,False,สิ้นเดือน,1,0
+2025-12-19,08:58,TD.,จ้างเฝ้าโต๊ะ,วันปกติ,Jinlong,ในเมือง,2025-12-19,ศุกร์,,1,False,วันนี้หาคนนั่งโต๊ะ จินหลง 30-1ชมครับ https://line.me/ti/p/3tEAtPaAAr,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2025-12-19,11:18,pik,หาโต๊ะ,รับปริญญา,"Hashtags (#), Replayground",หลังมอ,2025-12-19,ศุกร์,,2,True,หาโต๊ะ รีเพล/# 2โต๊ะวันนี้ค่า,True,False,False,False,False,False,False,False,False,False,False,True,False,False,เทศกาล + ศุกร์,2,0
 2025-12-19,11:29,🥰🥰🫶🏻🫶🏻🫶🏻,หาโต๊ะ,รับปริญญา,Hashtags (#),หลังมอ,2025-12-19,ศุกร์,,1,False,หาโต๊ะ# วันนี้ค่าาา,True,False,False,False,False,False,False,False,False,False,False,True,False,False,เทศกาล + ศุกร์,2,0
 2025-12-19,12:21,จี่หอย,หาโต๊ะ,วันปกติ,,,2025-12-19,ศุกร์,,1,False,มีใครปล่อยกู็นศ.ไหมครับ,True,False,False,False,False,False,False,False,False,False,False,True,False,False,เทศกาล + ศุกร์,2,0
@@ -6997,7 +6995,7 @@
 2026-02-22,17:48,หนองคู,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-02-22,อาทิตย์,,1,False,หาโต๊ะ#วันนี้ครับ,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
 2026-02-22,17:57,แงวแงว,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-02-22,อาทิตย์,A,1,False,มีใครปล่อย# โซนAมั้ยคะ,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
 2026-02-22,20:11,Jazz,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-02-27,ศุกร์,A27,1,False,หา#โซนa27นี้ค่ะ,True,False,True,False,False,False,False,False,False,False,False,False,False,False,ศุกร์ + สิ้นเดือน,2,0
-2026-02-22,20:50,bbttt,จ้างวอร์กอิน,สงกรานต์,Hashtags (#),หลังมอ,2026-03-03,อังคาร,,1,False,มีใครรับไปต่อคิวจองโต๊ะสงกรานต์# มั้ยคะ วันที่3ค่ะ,False,False,False,False,False,False,False,False,False,False,False,True,False,False,เทศกาล,1,0
+2026-02-22,20:50,bbttt,จ้างวอร์กอิน,วันปกติ,Hashtags (#),หลังมอ,2026-03-03,อังคาร,,1,False,มีใครรับไปต่อคิวจองโต๊ะสงกรานต์# มั้ยคะ วันที่3ค่ะ,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
 2026-02-22,23:02,น้องต้นอ้วน,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-02-28,เสาร์,A,1,False,หาโต๊ะ# โซนA เสาร์28,False,True,True,False,False,False,False,False,False,False,False,False,False,False,เสาร์ + สิ้นเดือน,2,0
 2026-02-23,14:16,ข้าวผัด,หาโต๊ะ,วันปกติ,,,2026-03-03,อังคาร,,2,True,หาโต๊ะวันที่6/3 2โต๊ะ A,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
 2026-02-23,14:16,ข้าวผัด,หาโต๊ะ,วันปกติ,,,2026-03-06,ศุกร์,,2,True,หาโต๊ะวันที่6/3 2โต๊ะ A,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
@@ -7093,7 +7091,7 @@
 2026-03-02,00:06,bb7,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-02,จันทร์,,1,False,หาโต๊ะ#พนค่ะ,False,False,True,False,False,False,False,False,False,False,False,False,False,False,สิ้นเดือน,1,0
 2026-03-02,00:25,jaaa,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-02,จันทร์,,1,False,หาโต๊ะ#พนค่ะ,False,False,True,False,False,False,False,False,False,False,False,False,False,False,สิ้นเดือน,1,0
 2026-03-02,00:45,NN😴,หาโต๊ะ,วันปกติ,Replayground,หลังมอ,2026-03-07,เสาร์,,1,False,หาคนต่อแถวยังโอมที่รีเพลวันที่7 16.30-19.30 ขอคนมีบัตรเข้างาน,False,True,False,False,False,False,False,False,False,False,True,False,False,False,เสาร์ + คอนเสิร์ต,2,0
-2026-03-02,09:21,จู้,จ้างวอร์กอิน,สงกรานต์,Hashtags (#),หลังมอ,2026-03-02,จันทร์,,1,False,มีใครรับต่อคิวจองโต๊ะ#สงกรานต์ไหมคะ,False,False,True,False,False,False,False,False,False,False,False,True,False,False,เทศกาล + สิ้นเดือน,2,0
+2026-03-02,09:21,จู้,จ้างวอร์กอิน,วันปกติ,Hashtags (#),หลังมอ,2026-03-02,จันทร์,,1,False,มีใครรับต่อคิวจองโต๊ะ#สงกรานต์ไหมคะ,False,False,True,False,False,False,False,False,False,False,False,False,False,False,สิ้นเดือน,1,0
 2026-03-02,10:08,หนูนา,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-02,จันทร์,A,1,False,หาโต๊ะ# โซนA วันนี้,False,False,True,False,False,False,False,False,False,False,False,False,False,False,สิ้นเดือน,1,0
 2026-03-02,11:12,bb7,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-02,จันทร์,,1,False,หาโต๊ะ#วันนี้ค่ะAรึBแถวหน้าก็ได้ค่ะ,False,False,True,False,False,False,False,False,False,False,False,False,False,False,สิ้นเดือน,1,0
 2026-03-02,11:35,m.,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-06,ศุกร์,,1,False,หาโต๊ะ # วันที่ 6 ค่พ,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
@@ -7180,7 +7178,7 @@
 2026-03-05,15:11,แป๋วของพี่,หาโต๊ะ,วันปกติ,B2SIT,หลังมอ,2026-03-06,ศุกร์,,1,False,หาโต๊ะบีทู ศุกร์นี้ค่าา,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2026-03-05,15:28,สโมกกิ้งตุ๋ย,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-06,ศุกร์,A,2,True,หา# โซนA 2โต๊ะวันศุกร์ที่ 6 นี้ค่ะ https://line.me/ti/p/BexFfU0gn3,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2026-03-05,15:52,น้องคีม จุ๊บมั๊วะ,จ้างเฝ้าโต๊ะ,วันปกติ,,,2026-03-05,พฤหัสบดี,,1,False,หาคนไปเอาโต๊ะyoungohm18:00-20:00ขอคนมีริชแบน(มีบัตรคิวให้แค่ไปนั่งเอาโต๊ะให้เฉยๆ),False,False,False,False,False,False,False,False,False,False,True,False,False,False,คอนเสิร์ต,1,0
-2026-03-05,16:16,🔥🎃เรา,หาโต๊ะ,สงกรานต์,,,2026-03-05,พฤหัสบดี,,1,False,หาโต๊ะช่วงสงกรานต์ค่ะ,False,False,False,False,False,False,False,False,False,False,True,True,False,False,เทศกาล + คอนเสิร์ต,2,0
+2026-03-05,16:16,🔥🎃เรา,หาโต๊ะ,วันปกติ,,,2026-03-05,พฤหัสบดี,,1,False,หาโต๊ะช่วงสงกรานต์ค่ะ,False,False,False,False,False,False,False,False,False,False,True,False,False,False,คอนเสิร์ต,1,0
 2026-03-05,16:30,Jam001,หาโต๊ะ,วันปกติ,,,2026-03-05,พฤหัสบดี,,2,True,มีใครมีโต๊ะยังโอมไหมมครับ2โต๊ะ,False,False,False,False,False,False,False,False,False,False,True,False,False,False,คอนเสิร์ต,1,0
 2026-03-05,16:45,m.,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-03,อังคาร,,1,False,หา # 7/3 ค่ะ,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
 2026-03-05,16:45,m.,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-07,เสาร์,,1,False,หา # 7/3 ค่ะ,False,True,False,False,False,False,False,False,False,False,False,False,False,False,เสาร์,1,0
@@ -7310,7 +7308,7 @@
 2026-03-07,22:19,อุอิอาาา,หาโต๊ะ,วันปกติ,,,2026-03-07,เสาร์,,1,False,หาโต๊ะจอยยังโอมค่ะ🥹🥹,False,True,False,False,False,False,False,False,False,False,True,False,False,False,เสาร์ + คอนเสิร์ต,2,0
 2026-03-07,22:59,Tree,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-13,ศุกร์,,1,False,หาโต๊ะ#ศุกร์ที่13,True,False,False,False,False,False,False,False,False,False,False,False,False,False,ศุกร์,1,0
 2026-03-07,23:02,Mommaayy,จ้างเฝ้าโต๊ะ,วันปกติ,,,2026-03-07,เสาร์,,1,False,หาคนนั่งลงเอยให้ค่ะ,False,True,False,False,False,False,False,False,False,False,True,False,False,False,เสาร์ + คอนเสิร์ต,2,0
-2026-03-08,00:12,tnp.lag,หาโต๊ะ,สงกรานต์,,,2026-03-08,อาทิตย์,,1,False,มีใครปล่อยโต๊ะสงกรานต์ไม่ถึงพันบ้างคะ,False,False,False,False,False,False,False,False,False,False,False,True,False,False,เทศกาล,1,0
+2026-03-08,00:12,tnp.lag,หาโต๊ะ,วันปกติ,,,2026-03-08,อาทิตย์,,1,False,มีใครปล่อยโต๊ะสงกรานต์ไม่ถึงพันบ้างคะ,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
 2026-03-08,00:40,babemmm,หาโต๊ะ,วันปกติ,SoldOut,หลังมอ,2026-03-08,อาทิตย์,,1,False,หาคนปล่อยโต้ะโซเอ้าตอนนี้,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
 2026-03-08,01:24,ค #27,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-08,อาทิตย์,A,1,False,หาโซนAโต๊ะเดียว,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
 2026-03-08,16:27,แมว🐈‍⬛,หาโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2026-04-03,ศุกร์,A,1,False,หาโต๊ะ # 3เมษา โซนAติดทางเดินค่า,True,False,False,True,False,False,True,False,False,False,False,True,False,False,เทศกาล + ศุกร์ + 12วันก่อนปิดเทอม + ช่วงสอบ,3,1
@@ -7534,7 +7532,7 @@
 2026-03-15,20:02,popoo,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-15,อาทิตย์,,1,False,มีใครปล่อยโค้กร้าน#มั้ยคะวันนี้,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
 2026-03-15,20:02,งั่มมม,หาโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2026-04-03,ศุกร์,,1,False,หาโต้ะ#5เมษาไม่ก็3เมษาค่ะ 2โต้ะ,True,False,False,True,False,False,True,False,False,False,False,True,False,False,เทศกาล + ศุกร์ + 12วันก่อนปิดเทอม + ช่วงสอบ,3,1
 2026-03-15,20:02,งั่มมม,หาโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2026-04-05,อาทิตย์,,1,False,หาโต้ะ#5เมษาไม่ก็3เมษาค่ะ 2โต้ะ,False,False,False,False,False,False,True,False,False,False,False,True,False,False,เทศกาล + 12วันก่อนปิดเทอม,2,0
-2026-03-15,20:11,สู่จุดหมายอันไกลโพ้น,หาโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2026-03-15,อาทิตย์,,1,False,หาโต๊ะ # ช่วงสงกรานต์ขอราคาไม่แรงมากนะคะ🤏🏻🫸🏻🫷🏻😢😭💔,False,False,False,False,False,False,False,False,False,False,False,True,False,False,เทศกาล,1,0
+2026-03-15,20:11,สู่จุดหมายอันไกลโพ้น,หาโต๊ะ,วันปกติ,Hashtags (#),หลังมอ,2026-03-15,อาทิตย์,,1,False,หาโต๊ะ # ช่วงสงกรานต์ขอราคาไม่แรงมากนะคะ🤏🏻🫸🏻🫷🏻😢😭💔,False,False,False,False,False,False,False,False,False,False,False,False,False,False,วันธรรมดา,0,0
 2026-03-15,20:24,Capmoo,หาโต๊ะ,สงกรานต์,Replayground,หลังมอ,2026-03-20,ศุกร์,,1,False,หาโต๊ะ replay 20 มี.ค ค่ะ,True,False,False,False,True,False,False,False,False,False,False,True,False,False,เทศกาล + ศุกร์ + 7วันก่อนสอบ,2,1
 2026-03-15,20:24,Nun,หาโต๊ะ,สงกรานต์,Replayground,หลังมอ,2026-03-20,ศุกร์,,1,False,หาโต๊ะรีเพ วันที่20 ราคามาเลยครับ,True,False,False,False,True,False,False,False,False,False,False,True,False,False,เทศกาล + ศุกร์ + 7วันก่อนสอบ,2,1
 2026-03-15,20:25,omm,หาโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2026-03-30,จันทร์,A,1,False,หาโต๊ะ #30 มีนา โซน A,False,False,True,True,False,False,True,False,False,False,False,True,False,False,เทศกาล + 12วันก่อนปิดเทอม + สิ้นเดือน + ช่วงสอบ,3,1
@@ -9096,7 +9094,7 @@
 2026-04-08,20:08,fefi,หาโต๊ะ,สงกรานต์,Replayground,หลังมอ,2026-04-09,พฤหัสบดี,,1,False,หาโต๊ะรีเพลวันที่ 9 คับ,False,False,False,False,False,False,False,True,False,False,False,True,False,False,เทศกาล + ปิดเทอม,1,1
 2026-04-08,20:08,ิิิิิิิิิ้,หาโต๊ะ,สงกรานต์,"Hashtags (#), Replayground",หลังมอ,2026-04-08,พุธ,,1,False,หาโต๊ะ รี หรือ # วันนี้,False,False,False,False,False,False,False,True,False,False,False,True,False,False,เทศกาล + ปิดเทอม,1,1
 2026-04-08,20:12,Ccc,หาโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2026-04-12,อาทิตย์,A,1,False,หาโต๊ะ # วันที่ 12 โซน A ค่ะ,False,False,False,False,False,False,False,True,False,False,False,True,False,False,เทศกาล + ปิดเทอม,1,1
-2026-04-08,20:26,A…..,หาโต๊ะ,สงกรานต์,Replayground,หลังมอ,2026-04-02,พฤหัสบดี,,1,False,หาโต๊ะรีเพลจอย ผญ.2 คนงับ,False,False,True,True,False,False,True,False,False,False,False,True,False,False,เทศกาล + 12วันก่อนปิดเทอม + สิ้นเดือน + ช่วงสอบ,3,1
+2026-04-08,20:26,A…..,หาโต๊ะ,สงกรานต์,Replayground,หลังมอ,2026-04-08,พุธ,,1,False,หาโต๊ะรีเพลจอย ผญ.2 คนงับ,False,False,False,False,False,False,False,True,False,False,False,True,False,False,เทศกาล + ปิดเทอม,1,1
 2026-04-08,20:27,Ppj,จ้างเฝ้าโต๊ะ,สงกรานต์,Replayground,หลังมอ,2026-04-08,พุธ,,1,False,หาคนนั่งรีเพลตอนนี้ค่ะ,False,False,False,False,False,False,False,True,False,False,False,True,False,False,เทศกาล + ปิดเทอม,1,1
 2026-04-08,20:37,งับ,จ้างเฝ้าโต๊ะ,สงกรานต์,Replayground,หลังมอ,2026-04-08,พุธ,,1,False,หาคนนั่งโต๊ะ Replay ตอนนี้ค่ะ,False,False,False,False,False,False,False,True,False,False,False,True,False,False,เทศกาล + ปิดเทอม,1,1
 2026-04-08,20:52,Win,หาโต๊ะ,สงกรานต์,Hashtags (#),หลังมอ,2026-04-10,ศุกร์,,1,False,หาโต๊ะ # วันที่10 คับ,True,False,False,False,False,False,False,True,False,False,False,True,False,False,เทศกาล + ศุกร์ + ปิดเทอม,2,1
