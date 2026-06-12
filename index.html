@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zinchang Command Center </title>
-    <meta name="description" content="Zinchang Command Center - ระบบวิเคราะห์ตลาดโต๊ะผี ขอนแก่น">
+    <meta name="description" content="Zinchang Command Center - ระบบวิเคราะห์ตลาดการซื้อขายโต๊ะ">
 
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -21,7 +20,159 @@
         }
 
         .sidebar {
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+
+        @media (min-width: 769px) {
+            .sidebar.collapsed {
+                width: 0 !important;
+                min-width: 0 !important;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+        }
+
+        #sidebar-expand-btn {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 0;
+            z-index: 25;
+            background: #111827;
+            color: #fff;
+            border-radius: 0 8px 8px 0;
+            padding: 8px 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        body.sidebar-collapsed #sidebar-expand-btn {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            #sidebar-expand-btn {
+                display: none !important;
+            }
+        }
+
+        .chart-expand-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            z-index: 5;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 2px 7px;
+            font-size: 13px;
+            color: #6b7280;
+            cursor: pointer;
+            line-height: 1.4;
+        }
+
+        .chart-expand-btn:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        #chart-fullscreen-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #chart-fullscreen-modal.hidden {
+            display: none;
+        }
+
+        #chart-fullscreen-box {
+            width: 100vw;
+            height: 100vh;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #chart-fullscreen-body {
+            flex: 1;
+            position: relative;
+            padding: 12px;
+            min-height: 0;
+        }
+
+        #fs-range-wrap {
+            position: relative;
+            height: 24px;
+        }
+
+        #fs-range-wrap::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 10px;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+        }
+
+        #fs-range-fill {
+            position: absolute;
+            top: 10px;
+            height: 4px;
+            background: #4A6FA5;
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
+        #fs-range-wrap input[type=range] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 24px;
+            margin: 0;
+            background: transparent;
+            pointer-events: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        #fs-range-wrap input[type=range]::-webkit-slider-thumb {
+            pointer-events: auto;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #4A6FA5;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+            cursor: ew-resize;
+            margin-top: 4px;
+        }
+
+        #fs-range-wrap input[type=range]::-moz-range-thumb {
+            pointer-events: auto;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #4A6FA5;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+            cursor: ew-resize;
+        }
+
+        #fs-range-wrap input[type=range]::-moz-range-track {
+            background: transparent;
         }
 
         #loading-screen {
@@ -197,6 +348,36 @@
             z-index: 100;
             margin-top: 4px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .ms-select-all-row {
+            padding: 4px 8px 4px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .ms-select-all-btn {
+            width: 100%;
+            padding: 4px 8px;
+            background: #1e40af;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .ms-select-all-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .ms-select-all-btn.deselect {
+            background: #374151;
+        }
+
+        .ms-select-all-btn.deselect:hover {
+            background: #4b5563;
         }
 
         .ms-option-label {
@@ -578,7 +759,38 @@
 <body class="flex h-screen overflow-hidden text-gray-800">
 
     <button id="hamburger-btn" onclick="toggleSidebar()" aria-label="เมนู">☰</button>
+    <button id="sidebar-expand-btn" onclick="toggleSidebarCollapse()" title="เปิดแถบนำทาง" aria-label="เปิดแถบนำทาง">»</button>
     <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Chart Fullscreen Modal -->
+    <div id="chart-fullscreen-modal" class="hidden" onclick="if(event.target===this)closeChartFullscreen()">
+        <div id="chart-fullscreen-box">
+            <div class="flex items-center justify-between px-4 py-2 border-b bg-gray-50" style="flex-shrink:0;">
+                <span class="text-xs text-gray-400">🔍 ลากคลุมช่วงเวลาเพื่อซูม • Scroll = ซูมแกนเวลา • Ctrl+ลาก = เลื่อน • หรือใช้แถบเลือกช่วงด้านล่าง</span>
+                <div class="flex items-center gap-2">
+                    <button onclick="resetFullscreenZoom()"
+                        class="text-xs font-bold px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100">
+                        ↺ รีเซ็ตซูม
+                    </button>
+                    <button onclick="closeChartFullscreen()" title="ปิด"
+                        class="text-gray-500 hover:text-red-600 font-bold text-lg leading-none px-2">✕</button>
+                </div>
+            </div>
+            <div id="chart-fullscreen-body"><canvas id="chart-fullscreen-canvas"></canvas></div>
+            <div id="chart-fullscreen-rangebar" class="px-6 py-2 border-t bg-gray-50" style="flex-shrink:0;">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold text-gray-500 flex-shrink-0">ช่วงแกน X:</span>
+                    <span id="fs-range-from-label" class="text-xs text-gray-700 font-semibold w-24 text-right flex-shrink-0"></span>
+                    <div id="fs-range-wrap" class="flex-1">
+                        <div id="fs-range-fill"></div>
+                        <input type="range" id="fs-range-from" step="1">
+                        <input type="range" id="fs-range-to" step="1">
+                    </div>
+                    <span id="fs-range-to-label" class="text-xs text-gray-700 font-semibold w-24 flex-shrink-0"></span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Loading Screen -->
     <div id="loading-screen">
@@ -589,7 +801,9 @@
 
     <!-- Sidebar -->
     <aside class="sidebar w-64 bg-gray-900 text-white flex flex-col h-full flex-shrink-0 z-20">
-        <div class="p-6 border-b border-gray-700">
+        <div class="p-6 border-b border-gray-700 relative">
+            <button onclick="toggleSidebarCollapse()" title="ปิดแถบนำทาง" aria-label="ปิดแถบนำทาง"
+                class="hidden md:block absolute top-3 right-3 text-gray-500 hover:text-white text-sm font-bold px-1">«</button>
             <div class="flex items-center gap-3 mb-2">
                 <div class="text-3xl"></div>
                 <div>
@@ -622,8 +836,8 @@
 
             <!-- Page Header -->
             <div class="bg-gray-900 px-4 md:px-6 pt-4 pb-0">
-                <h2 class="text-xl md:text-2xl font-bold text-white mb-1 page-title"> ZINCHANG MARKET EDA</h2>
-                <p class="text-gray-400 text-sm mb-3">วิเคราะห์ภาพรวมตลาดโต๊ะผี ขอนแก่น — ทุกแท็ปรองรับ Global Filter
+                <h2 class="text-xl md:text-2xl font-bold text-white mb-1 page-title"> ZINCHANG DASHBOARD</h2>
+                <p class="text-gray-400 text-sm mb-3">
                 </p>
 
                 <!-- ===== GLOBAL FILTER BAR ===== -->
@@ -634,7 +848,11 @@
                         <div class="custom-multiselect" id="ms-shop">
                             <div class="ms-header" onclick="this.parentElement.classList.toggle('open')">เลือกร้าน...
                             </div>
-                            <div class="ms-options" id="gf-shop-options"></div>
+                            <div class="ms-options" id="gf-shop-options">
+                                <div class="ms-select-all-row">
+                                    <button class="ms-select-all-btn" onclick="toggleSelectAll('gf-shop-cb',this)">เลือกทั้งหมด</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="filter-divider"></div>
@@ -645,6 +863,9 @@
                             <div class="ms-header" onclick="this.parentElement.classList.toggle('open')">เลือกตัวแปร...
                             </div>
                             <div class="ms-options" id="gf-variable-options">
+                                <div class="ms-select-all-row">
+                                    <button class="ms-select-all-btn" onclick="toggleSelectAll('gf-var-cb',this)">เลือกทั้งหมด</button>
+                                </div>
                                 <label class="ms-option-label"><input type="checkbox" value="is_fri"
                                         class="gf-var-cb">ศุกร์</label>
                                 <label class="ms-option-label"><input type="checkbox" value="is_sat"
@@ -677,7 +898,11 @@
                         <div class="custom-multiselect" id="ms-festival">
                             <div class="ms-header" onclick="this.parentElement.classList.toggle('open')">เลือกเทศกาล...
                             </div>
-                            <div class="ms-options" id="gf-festival-options"></div>
+                            <div class="ms-options" id="gf-festival-options">
+                                <div class="ms-select-all-row">
+                                    <button class="ms-select-all-btn" onclick="toggleSelectAll('gf-fest-cb',this)">เลือกทั้งหมด</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="filter-divider"></div>
@@ -704,6 +929,8 @@
                     </div>
                     <div class="filter-divider"></div>
                     <button class="filter-apply-btn" onclick="applyGlobalFilters()"> อัปเดต</button>
+                    <button class="filter-apply-btn" onclick="clearGlobalFilters()"
+                        style="background:#6b7280;">🗑 ล้าง</button>
                 </div>
 
                 <!-- EDA Mode Toggle -->
@@ -1243,6 +1470,8 @@
         //  CHART INSTANCE MANAGEMENT
         // ============================================================================
         const chartInstances = {};
+        const chartConfigs = {};
+        Chart.defaults.animation = false;
         function createChart(canvasId, config) {
             if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); delete chartInstances[canvasId]; }
             const canvas = document.getElementById(canvasId);
@@ -1263,8 +1492,160 @@
                 }
             }
             const ctx = canvas.getContext('2d');
+            chartConfigs[canvasId] = config;
             chartInstances[canvasId] = new Chart(ctx, config);
+            if (canvasId !== 'chart-fullscreen-canvas') addChartExpandBtn(canvas, canvasId);
             return chartInstances[canvasId];
+        }
+
+        function addChartExpandBtn(canvas, canvasId) {
+            const parent = canvas.parentElement;
+            if (!parent) return;
+            if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+            if (parent.querySelector(`.chart-expand-btn[data-for="${canvasId}"]`)) return;
+            const btn = document.createElement('button');
+            btn.className = 'chart-expand-btn';
+            btn.dataset.for = canvasId;
+            btn.title = 'ขยายเต็มหน้าจอ';
+            btn.textContent = '⛶';
+            btn.onclick = () => openChartFullscreen(canvasId);
+            parent.appendChild(btn);
+        }
+
+        // ── Chart fullscreen (ย้าย chart ไป modal แล้วคืนกลับตอนปิด) ──
+        let _fullscreenSource = null;
+        function openChartFullscreen(canvasId) {
+            const config = chartConfigs[canvasId];
+            if (!config) return;
+            if (!config.options) config.options = {};
+            if (!config.options.plugins) config.options.plugins = {};
+            _fullscreenSource = {
+                canvasId, config,
+                prevMAR: config.options.maintainAspectRatio,
+                prevZoom: config.options.plugins.zoom
+            };
+            if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); delete chartInstances[canvasId]; }
+            if (chartInstances['chart-fullscreen-canvas']) {
+                chartInstances['chart-fullscreen-canvas'].destroy();
+                delete chartInstances['chart-fullscreen-canvas'];
+            }
+            document.getElementById('chart-fullscreen-modal').classList.remove('hidden');
+            config.options.maintainAspectRatio = false;
+            config.options.plugins.zoom = {
+                zoom: {
+                    wheel: { enabled: true },
+                    pinch: { enabled: true },
+                    drag: {
+                        enabled: true,
+                        backgroundColor: 'rgba(74, 111, 165, 0.18)',
+                        borderColor: '#4A6FA5',
+                        borderWidth: 1
+                    },
+                    mode: 'x',
+                    onZoomComplete: ({ chart }) => syncFullscreenRangeUI(chart)
+                },
+                pan: {
+                    enabled: true, mode: 'x', modifierKey: 'ctrl',
+                    onPanComplete: ({ chart }) => syncFullscreenRangeUI(chart)
+                },
+                limits: { x: { min: 'original', max: 'original', minRange: 1 } }
+            };
+            const canvas = document.getElementById('chart-fullscreen-canvas');
+            chartInstances['chart-fullscreen-canvas'] = new Chart(canvas.getContext('2d'), config);
+            setupFullscreenRangeBar(chartInstances['chart-fullscreen-canvas']);
+        }
+
+        // ── Range slider (เลือกกรอบเวลาแกน X แบบ Power BI) ──
+        function setupFullscreenRangeBar(chart) {
+            const bar = document.getElementById('chart-fullscreen-rangebar');
+            const labels = (chart.data && chart.data.labels) || [];
+            const isCartesian = chart.scales && chart.scales.x && labels.length > 1;
+            bar.style.display = isCartesian ? '' : 'none';
+            if (!isCartesian) return;
+            const fromEl = document.getElementById('fs-range-from');
+            const toEl = document.getElementById('fs-range-to');
+            fromEl.min = 0; fromEl.max = labels.length - 1; fromEl.value = 0;
+            toEl.min = 0; toEl.max = labels.length - 1; toEl.value = labels.length - 1;
+            fromEl.oninput = () => applyFullscreenRange('from');
+            toEl.oninput = () => applyFullscreenRange('to');
+            updateFullscreenRangeLabels(0, labels.length - 1, labels.length - 1);
+        }
+
+        function applyFullscreenRange(moved) {
+            const chart = chartInstances['chart-fullscreen-canvas'];
+            if (!chart) return;
+            const fromEl = document.getElementById('fs-range-from');
+            const toEl = document.getElementById('fs-range-to');
+            let from = parseInt(fromEl.value, 10);
+            let to = parseInt(toEl.value, 10);
+            // กันหัวสไลด์สลับข้ามกัน
+            if (from >= to) {
+                if (moved === 'from') { from = to - 1; fromEl.value = from; }
+                else { to = from + 1; toEl.value = to; }
+            }
+            chart.zoomScale('x', { min: from, max: to }, 'none');
+            updateFullscreenRangeLabels(from, to, parseInt(fromEl.max, 10));
+        }
+
+        function syncFullscreenRangeUI(chart) {
+            const bar = document.getElementById('chart-fullscreen-rangebar');
+            if (bar.style.display === 'none') return;
+            const fromEl = document.getElementById('fs-range-from');
+            const toEl = document.getElementById('fs-range-to');
+            const from = Math.max(0, Math.round(chart.scales.x.min));
+            const to = Math.min(parseInt(toEl.max, 10), Math.round(chart.scales.x.max));
+            fromEl.value = from;
+            toEl.value = to;
+            updateFullscreenRangeLabels(from, to, parseInt(toEl.max, 10));
+        }
+
+        function updateFullscreenRangeLabels(from, to, maxIdx) {
+            const chart = chartInstances['chart-fullscreen-canvas'];
+            const labels = (chart && chart.data.labels) || [];
+            document.getElementById('fs-range-from-label').textContent = labels[from] !== undefined ? labels[from] : '';
+            document.getElementById('fs-range-to-label').textContent = labels[to] !== undefined ? labels[to] : '';
+            const fill = document.getElementById('fs-range-fill');
+            const denom = maxIdx || 1;
+            fill.style.left = `${(from / denom) * 100}%`;
+            fill.style.width = `${((to - from) / denom) * 100}%`;
+        }
+
+        function resetFullscreenZoom() {
+            const chart = chartInstances['chart-fullscreen-canvas'];
+            if (!chart) return;
+            if (typeof chart.resetZoom === 'function') chart.resetZoom();
+            syncFullscreenRangeUI(chart);
+        }
+
+        function closeChartFullscreen() {
+            if (chartInstances['chart-fullscreen-canvas']) {
+                chartInstances['chart-fullscreen-canvas'].destroy();
+                delete chartInstances['chart-fullscreen-canvas'];
+            }
+            document.getElementById('chart-fullscreen-modal').classList.add('hidden');
+            if (_fullscreenSource) {
+                _fullscreenSource.config.options.maintainAspectRatio = _fullscreenSource.prevMAR;
+                if (_fullscreenSource.prevZoom === undefined) {
+                    delete _fullscreenSource.config.options.plugins.zoom;
+                } else {
+                    _fullscreenSource.config.options.plugins.zoom = _fullscreenSource.prevZoom;
+                }
+                createChart(_fullscreenSource.canvasId, _fullscreenSource.config);
+                _fullscreenSource = null;
+            }
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && !document.getElementById('chart-fullscreen-modal').classList.contains('hidden')) {
+                closeChartFullscreen();
+            }
+        });
+
+        // ── Sidebar collapse (desktop) ──
+        function toggleSidebarCollapse() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+            document.body.classList.toggle('sidebar-collapsed');
+            setTimeout(() => window.dispatchEvent(new Event('resize')), 320);
         }
 
         const renderedTabs = new Set();
@@ -1321,27 +1702,35 @@
 
         /** Compute date range [fromStr, toStr] based on current gf settings */
         function computeDateRange() {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const todayStr = today.toISOString().slice(0, 10);
-
+            // ใช้ local date เพื่อให้ได้วันที่ถูกต้องตามเขตเวลาของผู้ใช้
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm   = String(now.getMonth() + 1).padStart(2, '0');
+            const dd   = String(now.getDate()).padStart(2, '0');
+            const todayStr = `${yyyy}-${mm}-${dd}`;
+        
             if (gfDateMode === 'all') return { from: null, to: null };
             if (gfDateMode === 'today') return { from: todayStr, to: todayStr };
+        
             if (gfDateMode === '7d') {
-                const f = new Date(today); f.setDate(f.getDate() - 6);
-                return { from: f.toISOString().slice(0, 10), to: todayStr };
+                const f = new Date(now); f.setDate(f.getDate() - 6);
+                const fy = f.getFullYear(), fm = String(f.getMonth()+1).padStart(2,'0'), fd = String(f.getDate()).padStart(2,'0');
+                return { from: `${fy}-${fm}-${fd}`, to: todayStr };
             }
             if (gfDateMode === '14d') {
-                const f = new Date(today); f.setDate(f.getDate() - 13);
-                return { from: f.toISOString().slice(0, 10), to: todayStr };
+                const f = new Date(now); f.setDate(f.getDate() - 13);
+                const fy = f.getFullYear(), fm = String(f.getMonth()+1).padStart(2,'0'), fd = String(f.getDate()).padStart(2,'0');
+                return { from: `${fy}-${fm}-${fd}`, to: todayStr };
             }
             if (gfDateMode === '30d') {
-                const f = new Date(today); f.setDate(f.getDate() - 29);
-                return { from: f.toISOString().slice(0, 10), to: todayStr };
+                const f = new Date(now); f.setDate(f.getDate() - 29);
+                const fy = f.getFullYear(), fm = String(f.getMonth()+1).padStart(2,'0'), fd = String(f.getDate()).padStart(2,'0');
+                return { from: `${fy}-${fm}-${fd}`, to: todayStr };
             }
             if (gfDateMode === 'custom') return { from: gfDateFrom, to: gfDateTo };
             return { from: null, to: null };
         }
+        
 
         /** Filter a date string (YYYY-MM-DD) by the global date range */
         function dateInRange(dateStr, range) {
@@ -1398,6 +1787,30 @@
                 gfDateFrom = document.getElementById('gf-date-from').value || null;
                 gfDateTo = document.getElementById('gf-date-to').value || null;
             }
+        }
+
+        function toggleSelectAll(cbClass, btn) {
+            const allCbs = document.querySelectorAll(`.${cbClass}`);
+            const allChecked = Array.from(allCbs).every(cb => cb.checked);
+            allCbs.forEach(cb => { cb.checked = !allChecked; });
+            btn.textContent = allChecked ? 'เลือกทั้งหมด' : 'ยกเลิกทั้งหมด';
+            btn.classList.toggle('deselect', !allChecked);
+        }
+
+        function clearGlobalFilters() {
+            // ร้าน: เลือกทั้งหมด
+            document.querySelectorAll('.gf-shop-cb').forEach(cb => { cb.checked = true; });
+            document.querySelectorAll('.ms-select-all-btn').forEach(btn => {
+                btn.textContent = 'เลือกทั้งหมด';
+                btn.classList.remove('deselect');
+            });
+            // ตัวแปร + เทศกาล: ไม่เลือก
+            document.querySelectorAll('.gf-var-cb, .gf-fest-cb').forEach(cb => { cb.checked = false; });
+            // วันที่: 30 วันล่าสุด
+            document.getElementById('gf-date-quick').value = '30d';
+            document.getElementById('date-range-panel').classList.remove('open');
+            document.getElementById('date-range-panel').style.display = '';
+            applyGlobalFilters();
         }
 
         function applyGlobalFilters() {
@@ -1590,7 +2003,9 @@
                 ...dfDemand.map(r => r.Clean_Shop),
                 ...dfSupply.map(r => r.Clean_Shop)
             ].filter(x => x && x !== ''))].sort();
-            document.getElementById('gf-shop-options').innerHTML = allShops.map(s => `<label class="ms-option-label"><input type="checkbox" value="${s}" class="gf-shop-cb" checked> ${s}</label>`).join('');
+            document.getElementById('gf-shop-options').innerHTML =
+                `<div class="ms-select-all-row"><button class="ms-select-all-btn" onclick="toggleSelectAll('gf-shop-cb',this)">เลือกทั้งหมด</button></div>` +
+                allShops.map(s => `<label class="ms-option-label"><input type="checkbox" value="${s}" class="gf-shop-cb" checked> ${s}</label>`).join('');
 
             // ---- Festival filter (global) ----
             const festivals = [...new Set(
@@ -1598,7 +2013,9 @@
                     .filter(r => r.is_festival === 'True' && r.festival)
                     .map(r => r.festival)
             )].sort();
-            document.getElementById('gf-festival-options').innerHTML = festivals.map(f => `<label class="ms-option-label"><input type="checkbox" value="${f}" class="gf-fest-cb"> ${f}</label>`).join('');
+            document.getElementById('gf-festival-options').innerHTML =
+                `<div class="ms-select-all-row"><button class="ms-select-all-btn" onclick="toggleSelectAll('gf-fest-cb',this)">เลือกทั้งหมด</button></div>` +
+                festivals.map(f => `<label class="ms-option-label"><input type="checkbox" value="${f}" class="gf-fest-cb"> ${f}</label>`).join('');
 
             // ---- Set Default Dates for Pickers ----
             const microDates = [...new Set(dfDemand.map(r => dateOnly(r.Wanted_Table_Date)).filter(Boolean))].sort().reverse();
@@ -1649,140 +2066,417 @@
         function renderEdaMicro() {
             renderedTabs.add('eda-micro');
             readGlobalFilters();
-
-            // Get date range
-            const range = computeDateRange();
-
-            const isGuardMode = currentMode === 'guard';
-
+        
+            const range   = computeDateRange();
+            const isGuard = currentMode === 'guard';
+        
+            // ── กรอง demand / supply ตาม mode ──────────────────────────
             let dAll, sAll;
-
-            if (isGuardMode) {
-                // โหมดเฝ้าโต๊ะ: demand = จ้างเฝ้าโต๊ะ, supply = รับเฝ้าโต๊ะ
+            if (isGuard) {
                 dAll = dfDemand.filter(r => r.type_hire && /จ้างเฝ้าโต๊ะ/.test(r.type_hire));
-                dAll = deduplicate(dAll, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
+                dAll = deduplicate(dAll, ['Post_Date','Customer_Name','Wanted_Table_Date','Wanted_Shop'], 'last');
                 dAll.forEach(r => r.Wanted_Count = parseFloat(r.Wanted_Count) || 1);
-
+        
                 sAll = dfSupply.filter(r => r.Supply_Type === 'รับเฝ้าโต๊ะ');
-                sAll = deduplicate(sAll, ['Post_Date', 'Seller_Name', 'Supply_Table_Date', 'Supply_Shop'], 'last');
+                sAll = deduplicate(sAll, ['Post_Date','Seller_Name','Supply_Table_Date','Supply_Shop'], 'last');
                 sAll.forEach(r => r.Supply_Count = parseFloat(r.Supply_Count) || 1);
             } else {
-                // โหมดปกติ: demand = หาโต๊ะ/จ้างวอร์กอิน, supply = มีของในมือ
                 dAll = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire));
-                dAll = deduplicate(dAll, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
+                dAll = deduplicate(dAll, ['Post_Date','Customer_Name','Wanted_Table_Date','Wanted_Shop'], 'last');
                 dAll.forEach(r => r.Wanted_Count = parseFloat(r.Wanted_Count) || 1);
-
+        
                 sAll = dfSupply.filter(r => r.Inventory_Status === 'มีของในมือ');
-                sAll = deduplicate(sAll, ['Post_Date', 'Seller_Name', 'Supply_Table_Date', 'Supply_Shop'], 'last');
+                sAll = deduplicate(sAll, ['Post_Date','Seller_Name','Supply_Table_Date','Supply_Shop'], 'last');
                 sAll.forEach(r => r.Supply_Count = parseFloat(r.Supply_Count) || 1);
             }
-
-            // Apply global filters (shop + variable + festival)
+        
+            // ── Global filters ──────────────────────────────────────────
             if (gfShops.length > 0) {
                 dAll = dAll.filter(r => gfShops.includes(r.Clean_Shop));
                 sAll = sAll.filter(r => gfShops.includes(r.Clean_Shop));
             }
             if (gfVariables && gfVariables.length > 0) {
-                const varFilter = r => gfVariables.some(v => (v === 'is_fri' && r.Date_of_week === 'ศุกร์') || (v === 'is_sat' && r.Date_of_week === 'เสาร์') || (r[v] === 'True'));
-                dAll = dAll.filter(varFilter);
-                sAll = sAll.filter(varFilter);
+                const varF = r => gfVariables.some(v =>
+                    (v === 'is_fri' && r.Date_of_week === 'ศุกร์') ||
+                    (v === 'is_sat' && r.Date_of_week === 'เสาร์') ||
+                    r[v] === 'True');
+                dAll = dAll.filter(varF);
+                sAll = sAll.filter(varF);
             }
             if (gfFestivals && gfFestivals.length > 0) {
-                const festFilter = r => r.is_festival === 'True' && gfFestivals.includes(r.festival);
-                dAll = dAll.filter(festFilter);
-                sAll = sAll.filter(festFilter);
+                const festF = r => r.is_festival === 'True' && gfFestivals.includes(r.festival);
+                dAll = dAll.filter(festF);
+                sAll = sAll.filter(festF);
             }
-
-            // Apply date range on Post_Date
+        
+            // ── Date range filter (Post_Date) ───────────────────────────
             if (range.from || range.to) {
                 dAll = dAll.filter(r => dateInRange(dateOnly(r.Post_Date), range));
                 sAll = sAll.filter(r => dateInRange(dateOnly(r.Post_Date), range));
             }
-
-            // Get all unique shops from filtered data
+        
+            // ── Helper: 7-day range ─────────────────────────────────────
+            const now7 = new Date();
+            const y7 = now7.getFullYear(), m7 = String(now7.getMonth()+1).padStart(2,'0'), d7 = String(now7.getDate()).padStart(2,'0');
+            const todayStr7 = `${y7}-${m7}-${d7}`;
+            const f7 = new Date(now7); f7.setDate(f7.getDate() - 6);
+            const fy7 = f7.getFullYear(), fm7 = String(f7.getMonth()+1).padStart(2,'0'), fd7 = String(f7.getDate()).padStart(2,'0');
+            const range7 = { from: `${fy7}-${fm7}-${fd7}`, to: todayStr7 };
+        
+            const dAll7 = dAll.filter(r => dateInRange(dateOnly(r.Post_Date), range7));
+            const sAll7 = sAll.filter(r => dateInRange(dateOnly(r.Post_Date), range7));
+        
+            // ── Shops & Dates ───────────────────────────────────────────
             const allShops = [...new Set([
                 ...dAll.map(r => r.Clean_Shop),
                 ...sAll.map(r => r.Clean_Shop)
             ].filter(x => x && x !== ''))].sort();
-
-            // Get all dates in range
+        
             const allDates = [...new Set([
                 ...dAll.map(r => dateOnly(r.Post_Date)),
                 ...sAll.map(r => dateOnly(r.Post_Date))
             ].filter(Boolean))].sort();
-
+        
             const container = document.getElementById('micro-all-shops-container');
             container.innerHTML = '';
-
+        
             if (allShops.length === 0 || allDates.length === 0) {
                 container.innerHTML = '<div class="card-warning p-4 rounded-lg">ไม่มีข้อมูลในช่วงที่กำหนด กรุณาปรับ Filter</div>';
                 return;
             }
-
-            // Build datasets: each shop has Demand + Supply line
-            const datasets = [];
+        
+            const rangeLabel = range.from
+                ? `${formatDateShort(range.from)}–${formatDateShort(range.to || todayStr7)}`
+                : 'ทั้งหมด';
+        
+            // ══════════════════════════════════════════════════════════════
+            // SECTION A — Line Chart + Toggle Demand/Supply
+            // ══════════════════════════════════════════════════════════════
+        
+            // สร้าง wrapper พร้อม toggle bar
+            const lineSection = document.createElement('div');
+            lineSection.className = 'bg-white p-6 rounded-lg shadow-md mb-6';
+            lineSection.innerHTML = `
+                <div class="flex flex-wrap items-center gap-2 mb-4">
+                    <span class="text-sm font-bold text-gray-600">แสดง/ซ่อน:</span>
+                    <button id="micro-toggle-demand"
+                        class="micro-ds-toggle px-3 py-1 rounded-full text-xs font-bold border-2 transition-all"
+                        style="background:#fee2e2;border-color:#B03A2E;color:#B03A2E;"
+                        onclick="microToggleSide('demand')">
+                        ● Demand ทั้งหมด
+                    </button>
+                    <button id="micro-toggle-supply"
+                        class="micro-ds-toggle px-3 py-1 rounded-full text-xs font-bold border-2 transition-all"
+                        style="background:#d1fae5;border-color:#1E8449;color:#1E8449;"
+                        onclick="microToggleSide('supply')">
+                        ● Supply ทั้งหมด
+                    </button>
+                    <span class="text-xs text-gray-400 ml-2"></span>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <div class="flex-1 min-w-0"><canvas id="chart-micro-all-shops"></canvas></div>
+                    <div id="micro-legend-panel" class="lg:w-80 flex-shrink-0 overflow-y-auto" style="max-height:480px;"></div>
+                </div>`;
+            container.appendChild(lineSection);
+        
+            // Build datasets
+            const lineDatasets = [];
             allShops.forEach((shop, idx) => {
                 const color = shopColor(idx);
-                const dShop = dAll.filter(r => r.Clean_Shop === shop);
-                const sShop = sAll.filter(r => r.Clean_Shop === shop);
+                const dShop  = dAll.filter(r => r.Clean_Shop === shop);
+                const sShop  = sAll.filter(r => r.Clean_Shop === shop);
                 const dByDate = groupBySum(dShop, r => dateOnly(r.Post_Date), 'Wanted_Count');
                 const sByDate = groupBySum(sShop, r => dateOnly(r.Post_Date), 'Supply_Count');
                 const dData = allDates.map(d => dByDate[d] || 0);
                 const sData = allDates.map(d => sByDate[d] || 0);
-                // Only add if has any data
                 const hasD = dData.some(v => v > 0), hasS = sData.some(v => v > 0);
-                const demandLabel = isGuardMode ? `🛡️ จ้างเฝ้า: ${shop}` : ` Demand: ${shop}`;
-                const supplyLabel = isGuardMode ? `🛡️ รับเฝ้า: ${shop}` : ` Supply: ${shop}`;
-                if (hasD) datasets.push({ label: demandLabel, data: dData, borderColor: color, backgroundColor: color + '22', borderWidth: 2.5, pointRadius: 3, tension: 0.2, fill: false });
-                if (hasS) datasets.push({ label: supplyLabel, data: sData, borderColor: color, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 2, pointStyle: 'rect', tension: 0.2, fill: false, borderCapStyle: 'round' });
+                const dLabel = isGuard ? `🛡️ จ้างเฝ้า: ${shop}` : `⬤ D: ${shop}`;
+                const sLabel = isGuard ? `🛡️ รับเฝ้า: ${shop}` : `⬡ S: ${shop}`;
+                if (hasD) lineDatasets.push({
+                    label: dLabel, data: dData,
+                    borderColor: color, backgroundColor: color + '22',
+                    borderWidth: 2.5, pointRadius: 3, tension: 0.2, fill: false,
+                    _side: 'demand', _shop: shop
+                });
+                if (hasS) lineDatasets.push({
+                    label: sLabel, data: sData,
+                    borderColor: color, borderWidth: 1.5,
+                    borderDash: [5, 4], pointRadius: 2, pointStyle: 'rect',
+                    tension: 0.2, fill: false,
+                    _side: 'supply', _shop: shop
+                });
             });
-
-            // Create single chart
-            const wrapper = document.createElement('div');
-            wrapper.className = 'bg-white p-6 rounded-lg shadow-md mb-6';
-            const canvas = document.createElement('canvas');
-            canvas.id = 'chart-micro-all-shops';
-            wrapper.appendChild(canvas);
-            container.appendChild(wrapper);
-
-            const rangeLabel = range.from ? `${formatDateShort(range.from)}–${formatDateShort(range.to || new Date().toISOString().slice(0, 10))}` : 'ทั้งหมด';
-            const chartTitle = isGuardMode ? `🛡️ จ้างเฝ้าโต๊ะ / รับเฝ้าโต๊ะ ทุกร้าน (${rangeLabel})` : `วอลลุ่มโต๊ะทุกร้าน (${rangeLabel})`;
-            createChart('chart-micro-all-shops', {
+        
+            const chartTitle = isGuard
+                ? `🛡️ จ้างเฝ้าโต๊ะ / รับเฝ้าโต๊ะ ทุกร้าน (${rangeLabel})`
+                : `วอลลุ่มโต๊ะทุกร้าน (${rangeLabel})`;
+        
+            const lineChart = createChart('chart-micro-all-shops', {
                 type: 'line',
-                data: { labels: allDates.map(formatDateShort), datasets },
+                data: { labels: allDates.map(formatDateShort), datasets: lineDatasets },
                 options: {
                     responsive: true,
                     plugins: {
-                        title: { display: true, text: chartTitle, font: { size: 15, weight: 'bold', family: 'Sarabun' } },
-                        legend: { position: 'bottom', labels: { font: { family: 'Sarabun' }, boxWidth: 12 } }
+                        title: {
+                            display: true,
+                            text: chartTitle,
+                            font: { size: 15, weight: 'bold', family: 'Sarabun' }
+                        },
+                        legend: { display: false }
                     },
                     scales: {
                         x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: true, maxTicksLimit: 30 } },
-                        y: { title: { display: true, text: isGuardMode ? 'ปริมาณงานเฝ้าโต๊ะ' : 'ปริมาณโต๊ะ (Volume)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }
+                        y: {
+                            title: {
+                                display: true,
+                                text: isGuard ? 'ปริมาณงานเฝ้าโต๊ะ' : 'ปริมาณโต๊ะ (Volume)'
+                            },
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        }
                     }
                 }
             });
-
-            // Summary cards per shop
-            const summaryContainer = document.createElement('div');
-            summaryContainer.className = 'grid grid-cols-1 md:grid-cols-3 gap-4';
-            allShops.forEach((shop, idx) => {
-                const color = shopColor(idx);
-                const dShop = dAll.filter(r => r.Clean_Shop === shop);
-                const sShop = sAll.filter(r => r.Clean_Shop === shop);
-                const totalD = dShop.reduce((a, r) => a + (parseFloat(r.Wanted_Count) || 1), 0);
-                const totalS = sShop.reduce((a, r) => a + (parseFloat(r.Supply_Count) || 1), 0);
-                const ratio = totalS > 0 ? (totalD / totalS).toFixed(1) : '∞';
-                const dLabel = isGuardMode ? '🛡️ จ้างเฝ้า' : ' Demand';
-                const sLabel = isGuardMode ? '🛡️ รับเฝ้า' : ' Supply';
-                summaryContainer.innerHTML += `
-                <div class="p-4 rounded-lg border-l-4" style="background:${color}11;border-color:${color};">
-                    <b style="color:${color};"> ${shop}</b><br>
-                    <span class="text-sm">${dLabel}: <b>${totalD}</b> | ${sLabel}: <b>${totalS}</b></span><br>
-                    <span class="text-xs text-gray-500">อัตราส่วน D:S = ${ratio}x</span>
-                </div>`;
+        
+            // ── Custom HTML legend (ขวาของกราฟ, 2 คอลัมน์ D/S, เรียงตาม demand รวม) ──
+            const shopDemandTotal = {};
+            allShops.forEach(shop => {
+                shopDemandTotal[shop] = dAll.filter(r => r.Clean_Shop === shop)
+                    .reduce((a, r) => a + (parseFloat(r.Wanted_Count) || 1), 0);
             });
-            container.appendChild(summaryContainer);
+            const rankedShops = [...allShops].sort((a, b) => shopDemandTotal[b] - shopDemandTotal[a]);
+
+            function renderMicroLegend() {
+                const chart = chartInstances['chart-micro-all-shops'];
+                const panel = document.getElementById('micro-legend-panel');
+                if (!chart || !panel) return;
+
+                // ── 3 summary cards ──
+                const totalD = dAll.reduce((a, r) => a + (parseFloat(r.Wanted_Count) || 1), 0);
+                const totalS = sAll.reduce((a, r) => a + (parseFloat(r.Supply_Count) || 1), 0);
+                const totalAll = totalD + totalS;
+                const dLabel = isGuard ? '🛡️ จ้างเฝ้า' : 'Demand';
+                const sLabel = isGuard ? '🛡️ รับเฝ้า' : 'Supply';
+                const cards = `
+                    <div class="grid grid-cols-3 gap-1.5 mb-3">
+                        <div class="rounded-lg p-2 text-center" style="background:#f0f4ff;border:1px solid #c7d2fe;">
+                            <div class="text-xs text-gray-500 leading-tight">รวมทั้งหมด</div>
+                            <div class="text-base font-extrabold text-indigo-700">${totalAll.toLocaleString()}</div>
+                        </div>
+                        <div class="rounded-lg p-2 text-center" style="background:#fff1f0;border:1px solid #fca5a5;">
+                            <div class="text-xs text-gray-500 leading-tight">${dLabel}</div>
+                            <div class="text-base font-extrabold text-red-700">${totalD.toLocaleString()}</div>
+                        </div>
+                        <div class="rounded-lg p-2 text-center" style="background:#f0fdf4;border:1px solid #86efac;">
+                            <div class="text-xs text-gray-500 leading-tight">${sLabel}</div>
+                            <div class="text-base font-extrabold text-green-700">${totalS.toLocaleString()}</div>
+                        </div>
+                    </div>`;
+
+                const dsIndex = {};
+                chart.data.datasets.forEach((ds, i) => { dsIndex[ds._shop + '|' + ds._side] = i; });
+                const buildCol = (side, title, titleColor) => {
+                    let rows = '';
+                    rankedShops.forEach(shop => {
+                        const i = dsIndex[shop + '|' + side];
+                        if (i === undefined) return;
+                        const color = chart.data.datasets[i].borderColor;
+                        const visible = chart.isDatasetVisible(i);
+                        rows += `
+                            <div onclick="microLegendToggle(${i})"
+                                class="flex items-center gap-1.5 px-1 py-0.5 rounded cursor-pointer hover:bg-gray-100 text-xs"
+                                style="${visible ? '' : 'opacity:0.35;text-decoration:line-through;'}">
+                                <span style="width:10px;height:10px;border-radius:2px;background:${color};flex-shrink:0;"></span>
+                                <span class="truncate" title="${shop}">${shop}</span>
+                            </div>`;
+                    });
+                    return `<div class="flex-1 min-w-0">
+                        <div class="text-xs font-bold mb-1 pb-1 border-b" style="color:${titleColor};">${title}</div>
+                        ${rows}
+                    </div>`;
+                };
+                panel.innerHTML = cards + `<div class="flex gap-3">
+                    ${buildCol('demand', isGuard ? '🛡️ จ้างเฝ้า' : '⬤ Demand', '#B03A2E')}
+                    ${buildCol('supply', isGuard ? '🛡️ รับเฝ้า' : '⬡ Supply', '#1E8449')}
+                </div>`;
+            }
+
+            window.microLegendToggle = function(i) {
+                const chart = chartInstances['chart-micro-all-shops'];
+                if (!chart) return;
+                chart.setDatasetVisibility(i, !chart.isDatasetVisible(i));
+                chart.update();
+                renderMicroLegend();
+            };
+
+            renderMicroLegend();
+
+            // ── Toggle demand/supply สำหรับ line chart ─────────────────
+            // เก็บ state ใน closure
+            window._microToggleState = { demand: true, supply: true };
+            window.microToggleSide = function(side) {
+                window._microToggleState[side] = !window._microToggleState[side];
+                const chart = chartInstances['chart-micro-all-shops'];
+                if (!chart) return;
+                chart.data.datasets.forEach((ds, i) => {
+                    if (ds._side === side) {
+                        chart.setDatasetVisibility(i, window._microToggleState[side]);
+                    }
+                });
+                chart.update();
+                renderMicroLegend();
+        
+                // อัปเดต style ปุ่ม
+                const btn = document.getElementById(`micro-toggle-${side}`);
+                const isOn = window._microToggleState[side];
+                if (side === 'demand') {
+                    btn.style.background  = isOn ? '#fee2e2' : '#f3f4f6';
+                    btn.style.borderColor = isOn ? '#B03A2E' : '#9ca3af';
+                    btn.style.color       = isOn ? '#B03A2E' : '#9ca3af';
+                    btn.textContent       = isOn ? '● Demand ทั้งหมด' : '○ Demand (ซ่อน)';
+                } else {
+                    btn.style.background  = isOn ? '#d1fae5' : '#f3f4f6';
+                    btn.style.borderColor = isOn ? '#1E8449' : '#9ca3af';
+                    btn.style.color       = isOn ? '#1E8449' : '#9ca3af';
+                    btn.textContent       = isOn ? '● Supply ทั้งหมด' : '○ Supply (ซ่อน)';
+                }
+            };
+        
+            // ══════════════════════════════════════════════════════════════
+            // SECTION B — Ratio Charts (30วัน + 7วัน)
+            // ══════════════════════════════════════════════════════════════
+            function buildShopTotals(dArr, sArr) {
+                const shops = [...new Set([
+                    ...dArr.map(r => r.Clean_Shop),
+                    ...sArr.map(r => r.Clean_Shop)
+                ].filter(x => x && x !== ''))].sort();
+                return shops.map(shop => ({
+                    shop,
+                    d: dArr.filter(r => r.Clean_Shop === shop).reduce((a, r) => a + (parseFloat(r.Wanted_Count)||1), 0),
+                    s: sArr.filter(r => r.Clean_Shop === shop).reduce((a, r) => a + (parseFloat(r.Supply_Count)||1), 0),
+                }));
+            }
+        
+            const totals30 = buildShopTotals(dAll,  sAll);
+            const totals7  = buildShopTotals(dAll7, sAll7);
+        
+            const ratioSection = document.createElement('div');
+            ratioSection.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        
+                    <!-- 30-day ratio -->
+                    <div class="bg-white p-5 rounded-lg shadow-md">
+                        <h4 class="font-bold text-sm text-gray-700 mb-1">
+                            สัดส่วนตลาด (${rangeLabel})
+                        </h4>
+                        <p class="text-xs text-gray-400 mb-3">ผลรวมแต่ละร้าน เรียงจากมากไปน้อย — สีเข้ม = Demand, สีอ่อน = Supply</p>
+                        <div class="chart-container" style="height:280px;">
+                            <canvas id="chart-micro-ratio30"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 7-day ratio -->
+                    <div class="bg-white p-5 rounded-lg shadow-md">
+                        <h4 class="font-bold text-sm text-gray-700 mb-1">
+                            สัดส่วนตลาด 7 วันล่าสุด (${formatDateShort(range7.from)}–${formatDateShort(range7.to)})
+                        </h4>
+                        <p class="text-xs text-gray-400 mb-3">ผลรวมแต่ละร้าน เรียงจากมากไปน้อย — สีเข้ม = Demand, สีอ่อน = Supply</p>
+                        <div class="chart-container" style="height:280px;">
+                            <canvas id="chart-micro-ratio7"></canvas>
+                        </div>
+                    </div>
+        
+                </div>`;
+            container.appendChild(ratioSection);
+        
+            // ── Stacked bar builder (Demand เข้ม + Supply อ่อน ต่อร้าน) ──
+            function renderRatioStackedBar(canvasId, totalsArr, periodLabel) {
+                const dLabel = isGuard ? '🛡️ จ้างเฝ้า' : 'Demand';
+                const sLabel = isGuard ? '🛡️ รับเฝ้า' : 'Supply';
+
+                const sorted = [...totalsArr].sort((a, b) => (b.d + b.s) - (a.d + a.s));
+
+                // ถ้าทุกค่าเป็น 0 → แสดง placeholder
+                if (sorted.length === 0 || sorted.every(r => r.d === 0 && r.s === 0)) {
+                    createChart(canvasId, {
+                        type: 'bar',
+                        data: { labels: ['ไม่มีข้อมูล'], datasets: [{ data: [0], backgroundColor: ['#e5e7eb'] }] },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: {
+                                title: { display: true, text: `สัดส่วนตลาด ${periodLabel} — ไม่มีข้อมูล`, font: { family: 'Sarabun' } },
+                                legend: { display: false }
+                            }
+                        }
+                    });
+                    return;
+                }
+
+                const labels = sorted.map(r => r.shop);
+                const colors = sorted.map(r => shopColor(Math.max(0, allShops.indexOf(r.shop))));
+
+                createChart(canvasId, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: dLabel,
+                                data: sorted.map(r => r.d),
+                                backgroundColor: colors,
+                                stack: 'total'
+                            },
+                            {
+                                label: sLabel,
+                                data: sorted.map(r => r.s),
+                                backgroundColor: colors.map(c => c + '55'),
+                                stack: 'total'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `สัดส่วนตลาด ${periodLabel}`,
+                                font: { size: 13, weight: 'bold', family: 'Sarabun' }
+                            },
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label(ctx) {
+                                        const row = sorted[ctx.dataIndex];
+                                        const total = (row.d + row.s) || 1;
+                                        const pct = ((ctx.raw / total) * 100).toFixed(1);
+                                        return ` ${ctx.dataset.label}: ${ctx.raw} (${pct}% ของร้าน)`;
+                                    },
+                                    footer(items) {
+                                        const row = sorted[items[0].dataIndex];
+                                        return `รวม: ${row.d + row.s}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                stacked: true,
+                                ticks: { font: { family: 'Sarabun', size: 11 }, maxRotation: 45, minRotation: 0, autoSkip: false }
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true,
+                                title: { display: true, text: 'ปริมาณรวม' },
+                                grid: { color: 'rgba(0,0,0,0.05)' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            renderRatioStackedBar('chart-micro-ratio30', totals30, `(${rangeLabel})`);
+            renderRatioStackedBar('chart-micro-ratio7',  totals7,  `7 วันล่าสุด (${formatDateShort(range7.from)}–${formatDateShort(range7.to)})`);
         }
 
         // ============================================================================
