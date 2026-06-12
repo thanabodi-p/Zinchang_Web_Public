@@ -520,6 +520,58 @@
                 font-size: 11px;
             }
         }
+
+        /* Mode Toggle */
+        .mode-toggle-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #1e293b;
+            border-bottom: 2px solid #334155;
+            padding: 8px 16px;
+        }
+        .mode-toggle-label {
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .mode-toggle-switch {
+            display: flex;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .mode-toggle-btn {
+            padding: 5px 14px;
+            font-size: 12px;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        .mode-toggle-btn.active-table {
+            background: #1d4ed8;
+            color: #fff;
+        }
+        .mode-toggle-btn.active-guard {
+            background: #7c3aed;
+            color: #fff;
+        }
+        .mode-badge-guard {
+            background: #7c3aed22;
+            color: #a78bfa;
+            border: 1px solid #7c3aed55;
+            border-radius: 6px;
+            padding: 2px 10px;
+            font-size: 11px;
+            font-weight: 700;
+        }
     </style>
 </head>
 
@@ -652,6 +704,16 @@
                     </div>
                     <div class="filter-divider"></div>
                     <button class="filter-apply-btn" onclick="applyGlobalFilters()"> อัปเดต</button>
+                </div>
+
+                <!-- EDA Mode Toggle -->
+                <div class="mode-toggle-bar">
+                    <span class="mode-toggle-label">⚙️ โหมดแสดงผล:</span>
+                    <div class="mode-toggle-switch">
+                        <button class="mode-toggle-btn active-table" id="mode-btn-table" onclick="switchMode('table')">🪑 หาโต๊ะ / ขายโต๊ะ</button>
+                        <button class="mode-toggle-btn" id="mode-btn-guard" onclick="switchMode('guard')">🛡️ จ้างเฝ้าโต๊ะ / รับเฝ้าโต๊ะ</button>
+                    </div>
+                    <span class="mode-badge-guard hidden" id="mode-guard-badge">🛡️ โหมดเฝ้าโต๊ะ</span>
                 </div>
 
                 <!-- EDA Tabs -->
@@ -1218,6 +1280,45 @@
         let gfDateFrom = null;
         let gfDateTo = null;
 
+        // Mode: 'table' = หาโต๊ะ/ขายโต๊ะ (default), 'guard' = จ้างเฝ้าโต๊ะ/รับเฝ้าโต๊ะ
+        let currentMode = 'table';
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const btnTable = document.getElementById('mode-btn-table');
+            const btnGuard = document.getElementById('mode-btn-guard');
+            const badge = document.getElementById('mode-guard-badge');
+            if (mode === 'guard') {
+                btnTable.classList.remove('active-table');
+                btnGuard.classList.add('active-guard');
+                badge.classList.remove('hidden');
+            } else {
+                btnTable.classList.add('active-table');
+                btnGuard.classList.remove('active-guard');
+                badge.classList.add('hidden');
+            }
+            // Re-render all rendered tabs with new mode
+            renderedTabs.delete('eda-micro');
+            renderedTabs.delete('eda-oracle');
+            renderedTabs.delete('eda-trend');
+            renderedTabs.delete('eda-realtime');
+            // Re-render currently active tab
+            const activeTab = document.querySelector('[data-tabgroup="eda"].tab-btn.active');
+            if (activeTab) {
+                const tabId = activeTab.dataset.tab;
+                if (tabId === 'eda-micro') renderEdaMicro();
+                else if (tabId === 'eda-oracle') renderTabOracle();
+                else if (tabId === 'eda-trend') {
+                    renderedTabs.add('eda-trend');
+                    // Re-render whichever trend sub-tab is currently visible
+                    const activeTrendSub = document.querySelector('[data-tabgroup="trend-sub"].tab-btn.active');
+                    if (activeTrendSub?.dataset.tab === 'trend-reverse') renderRevDemand();
+                    else renderMicroTrend();
+                }
+                else if (tabId === 'eda-realtime') renderEdaRealtime();
+            }
+        }
+
         /** Compute date range [fromStr, toStr] based on current gf settings */
         function computeDateRange() {
             const today = new Date();
@@ -1355,12 +1456,16 @@
             if (tabGroup === 'eda') {
                 if (tabId === 'eda-micro' && !renderedTabs.has('eda-micro')) renderEdaMicro();
                 if (tabId === 'eda-oracle' && !renderedTabs.has('eda-oracle')) renderTabOracle();
-                if (tabId === 'eda-trend' && !renderedTabs.has('eda-trend')) renderEdaTrendInit();
+                if (tabId === 'eda-trend') {
+                    if (!renderedTabs.has('eda-trend')) renderEdaTrendInit();
+                    // else: sub-tabs always re-render on click anyway (trend-sub block below)
+                }
                 if (tabId === 'eda-realtime' && !renderedTabs.has('eda-realtime')) renderEdaRealtime();
                 if (tabId === 'eda-tracker' && !renderedTabs.has('eda-tracker')) renderEdaTracker();
                 if (tabId === 'eda-analysis' && !renderedTabs.has('eda-analysis')) renderEdaAnalysis();
             }
             if (tabGroup === 'trend-sub') {
+                // Always re-render sub-tabs (no cache) so mode changes take effect immediately
                 if (tabId === 'trend-forward') renderMicroTrend();
                 if (tabId === 'trend-reverse') renderRevDemand();
             }
@@ -1548,14 +1653,29 @@
             // Get date range
             const range = computeDateRange();
 
-            // Filter demand/supply by range (on Wanted/Supply_Table_Date) + global filters
-            let dAll = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire));
-            dAll = deduplicate(dAll, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
-            dAll.forEach(r => r.Wanted_Count = parseFloat(r.Wanted_Count) || 1);
+            const isGuardMode = currentMode === 'guard';
 
-            let sAll = dfSupply.filter(r => r.Inventory_Status === 'มีของในมือ');
-            sAll = deduplicate(sAll, ['Post_Date', 'Seller_Name', 'Supply_Table_Date', 'Supply_Shop'], 'last');
-            sAll.forEach(r => r.Supply_Count = parseFloat(r.Supply_Count) || 1);
+            let dAll, sAll;
+
+            if (isGuardMode) {
+                // โหมดเฝ้าโต๊ะ: demand = จ้างเฝ้าโต๊ะ, supply = รับเฝ้าโต๊ะ
+                dAll = dfDemand.filter(r => r.type_hire && /จ้างเฝ้าโต๊ะ/.test(r.type_hire));
+                dAll = deduplicate(dAll, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
+                dAll.forEach(r => r.Wanted_Count = parseFloat(r.Wanted_Count) || 1);
+
+                sAll = dfSupply.filter(r => r.Supply_Type === 'รับเฝ้าโต๊ะ');
+                sAll = deduplicate(sAll, ['Post_Date', 'Seller_Name', 'Supply_Table_Date', 'Supply_Shop'], 'last');
+                sAll.forEach(r => r.Supply_Count = parseFloat(r.Supply_Count) || 1);
+            } else {
+                // โหมดปกติ: demand = หาโต๊ะ/จ้างวอร์กอิน, supply = มีของในมือ
+                dAll = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire));
+                dAll = deduplicate(dAll, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
+                dAll.forEach(r => r.Wanted_Count = parseFloat(r.Wanted_Count) || 1);
+
+                sAll = dfSupply.filter(r => r.Inventory_Status === 'มีของในมือ');
+                sAll = deduplicate(sAll, ['Post_Date', 'Seller_Name', 'Supply_Table_Date', 'Supply_Shop'], 'last');
+                sAll.forEach(r => r.Supply_Count = parseFloat(r.Supply_Count) || 1);
+            }
 
             // Apply global filters (shop + variable + festival)
             if (gfShops.length > 0) {
@@ -1611,8 +1731,10 @@
                 const sData = allDates.map(d => sByDate[d] || 0);
                 // Only add if has any data
                 const hasD = dData.some(v => v > 0), hasS = sData.some(v => v > 0);
-                if (hasD) datasets.push({ label: ` Demand: ${shop}`, data: dData, borderColor: color, backgroundColor: color + '22', borderWidth: 2.5, pointRadius: 3, tension: 0.2, fill: false });
-                if (hasS) datasets.push({ label: ` Supply: ${shop}`, data: sData, borderColor: color, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 2, pointStyle: 'rect', tension: 0.2, fill: false, borderCapStyle: 'round' });
+                const demandLabel = isGuardMode ? `🛡️ จ้างเฝ้า: ${shop}` : ` Demand: ${shop}`;
+                const supplyLabel = isGuardMode ? `🛡️ รับเฝ้า: ${shop}` : ` Supply: ${shop}`;
+                if (hasD) datasets.push({ label: demandLabel, data: dData, borderColor: color, backgroundColor: color + '22', borderWidth: 2.5, pointRadius: 3, tension: 0.2, fill: false });
+                if (hasS) datasets.push({ label: supplyLabel, data: sData, borderColor: color, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 2, pointStyle: 'rect', tension: 0.2, fill: false, borderCapStyle: 'round' });
             });
 
             // Create single chart
@@ -1624,18 +1746,19 @@
             container.appendChild(wrapper);
 
             const rangeLabel = range.from ? `${formatDateShort(range.from)}–${formatDateShort(range.to || new Date().toISOString().slice(0, 10))}` : 'ทั้งหมด';
+            const chartTitle = isGuardMode ? `🛡️ จ้างเฝ้าโต๊ะ / รับเฝ้าโต๊ะ ทุกร้าน (${rangeLabel})` : `วอลลุ่มโต๊ะทุกร้าน (${rangeLabel})`;
             createChart('chart-micro-all-shops', {
                 type: 'line',
                 data: { labels: allDates.map(formatDateShort), datasets },
                 options: {
                     responsive: true,
                     plugins: {
-                        title: { display: true, text: `วอลลุ่มโต๊ะทุกร้าน (${rangeLabel})`, font: { size: 15, weight: 'bold', family: 'Sarabun' } },
+                        title: { display: true, text: chartTitle, font: { size: 15, weight: 'bold', family: 'Sarabun' } },
                         legend: { position: 'bottom', labels: { font: { family: 'Sarabun' }, boxWidth: 12 } }
                     },
                     scales: {
                         x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: true, maxTicksLimit: 30 } },
-                        y: { title: { display: true, text: 'ปริมาณโต๊ะ (Volume)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }
+                        y: { title: { display: true, text: isGuardMode ? 'ปริมาณงานเฝ้าโต๊ะ' : 'ปริมาณโต๊ะ (Volume)' }, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } }
                     }
                 }
             });
@@ -1650,12 +1773,13 @@
                 const totalD = dShop.reduce((a, r) => a + (parseFloat(r.Wanted_Count) || 1), 0);
                 const totalS = sShop.reduce((a, r) => a + (parseFloat(r.Supply_Count) || 1), 0);
                 const ratio = totalS > 0 ? (totalD / totalS).toFixed(1) : '∞';
-                const statusEmoji = '';
+                const dLabel = isGuardMode ? '🛡️ จ้างเฝ้า' : ' Demand';
+                const sLabel = isGuardMode ? '🛡️ รับเฝ้า' : ' Supply';
                 summaryContainer.innerHTML += `
                 <div class="p-4 rounded-lg border-l-4" style="background:${color}11;border-color:${color};">
                     <b style="color:${color};"> ${shop}</b><br>
-                    <span class="text-sm"> Demand: <b>${totalD}</b> |  Supply: <b>${totalS}</b></span><br>
-                    <span class="text-xs text-gray-500">อัตราส่วน D:S = ${ratio}x ${statusEmoji}</span>
+                    <span class="text-sm">${dLabel}: <b>${totalD}</b> | ${sLabel}: <b>${totalS}</b></span><br>
+                    <span class="text-xs text-gray-500">อัตราส่วน D:S = ${ratio}x</span>
                 </div>`;
             });
             container.appendChild(summaryContainer);
@@ -1667,6 +1791,15 @@
         async function renderTabOracle() {
             renderedTabs.add('eda-oracle');
             document.getElementById('oracle-click-detail').classList.add('hidden');
+
+            const isGuardMode = currentMode === 'guard';
+
+            // Guard mode: show only actual data (no prediction)
+            if (isGuardMode) {
+                _renderOracleGuardMode();
+                return;
+            }
+
             const monthVal = document.getElementById('oracle-month-select')?.value || 'all';
             let existingDates = [...new Set([
                 ...demandDedupGlobal.map(r => dateOnly(r.Wanted_Table_Date)),
@@ -1763,6 +1896,101 @@
             ${strategyHtml}`;
         }
 
+        function _renderOracleGuardMode() {
+            const monthVal = document.getElementById('oracle-month-select')?.value || 'all';
+
+            // Demand side: จ้างเฝ้าโต๊ะ
+            let guardDemand = dfDemand.filter(r => r.type_hire && /จ้างเฝ้าโต๊ะ/.test(r.type_hire));
+            guardDemand = deduplicate(guardDemand, ['Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'first');
+            guardDemand.forEach(r => r.Wanted_Count = parseFloat(r.Wanted_Count) || 1);
+
+            // Supply side: รับเฝ้าโต๊ะ
+            let guardSupply = dfSupply.filter(r => r.Supply_Type === 'รับเฝ้าโต๊ะ');
+            guardSupply = deduplicate(guardSupply, ['Seller_Name', 'Supply_Table_Date', 'Supply_Shop', 'Supply_Zone'], 'last');
+            guardSupply.forEach(r => r.Supply_Count = parseFloat(r.Supply_Count) || 1);
+
+            let allDates = [...new Set([
+                ...guardDemand.map(r => dateOnly(r.Wanted_Table_Date)),
+                ...guardSupply.map(r => dateOnly(r.Supply_Table_Date))
+            ])].filter(d => Boolean(d) && d.length === 10).sort();
+
+            if (monthVal !== 'all') {
+                allDates = allDates.filter(d => d.startsWith(monthVal));
+            }
+
+            if (allDates.length === 0) {
+                document.getElementById('oracle-summary').innerHTML = '<div class="col-span-2 p-4 card-info rounded-lg">ไม่มีข้อมูล จ้างเฝ้าโต๊ะ / รับเฝ้าโต๊ะ ในช่วงนี้</div>';
+                // Clear chart
+                createChart('chart-oracle-timeline', {
+                    type: 'line',
+                    data: { labels: [], datasets: [] },
+                    options: { responsive: true, plugins: { title: { display: true, text: '🛡️ Oracle: จ้างเฝ้าโต๊ะ vs รับเฝ้าโต๊ะ (ไม่มีข้อมูล)', font: { size: 15, weight: 'bold', family: 'Sarabun' } } } }
+                });
+                return;
+            }
+
+            const actualDMap = groupBySum(guardDemand, r => dateOnly(r.Wanted_Table_Date), 'Wanted_Count');
+            const actualSMap = groupBySum(guardSupply, r => dateOnly(r.Supply_Table_Date), 'Supply_Count');
+
+            const labels = allDates.map(formatDateShort);
+            const actDemands = allDates.map(d => actualDMap[d] || 0);
+            const actSupplys = allDates.map(d => actualSMap[d] || 0);
+
+            const totalD = actDemands.reduce((a, b) => a + b, 0);
+            const totalS = actSupplys.reduce((a, b) => a + b, 0);
+            const latestDateStr = allDates[allDates.length - 1];
+            const latestD = actualDMap[latestDateStr] || 0;
+            const latestS = actualSMap[latestDateStr] || 0;
+
+            createChart('chart-oracle-timeline', {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: '🛡️ จ้างเฝ้าโต๊ะ (จริง)', data: actDemands, borderColor: '#7c3aed', borderWidth: 2.5, tension: 0.2, pointRadius: 3, backgroundColor: 'rgba(124,58,237,0.08)', fill: true },
+                        { label: '🛡️ รับเฝ้าโต๊ะ (จริง)', data: actSupplys, borderColor: '#06b6d4', borderWidth: 2.5, tension: 0.2, pointRadius: 3, pointStyle: 'rect' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: { display: true, text: '🛡️ Oracle: จ้างเฝ้าโต๊ะ vs รับเฝ้าโต๊ะ (ข้อมูลจริง)', font: { size: 15, weight: 'bold', family: 'Sarabun' } },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: true, maxTicksLimit: 30 } },
+                        y: { title: { display: true, text: 'ปริมาณ (งาน)' }, beginAtZero: true }
+                    },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const i = elements[0].index, dStr = allDates[i];
+                            document.getElementById('oracle-click-detail').classList.remove('hidden');
+                            document.getElementById('oracle-click-title').innerText = `ข้อมูลวันที่ ${formatDateFull(dStr)}`;
+                            document.getElementById('oracle-click-demand').innerText = actDemands[i] || 0;
+                            document.getElementById('oracle-click-supply').innerText = actSupplys[i] || 0;
+                            document.getElementById('oracle-click-demand-actual').innerText = '(จ้างเฝ้าโต๊ะ)';
+                            document.getElementById('oracle-click-supply-actual').innerText = '(รับเฝ้าโต๊ะ)';
+                            document.getElementById('oracle-click-strategy').innerText = `D/S Ratio = ${actSupplys[i] > 0 ? (actDemands[i] / actSupplys[i]).toFixed(2) : '∞'}x`;
+                        }
+                    }
+                }
+            });
+
+            let scarcityRatio = latestS > 0 ? (latestD / latestS) : 0;
+            let strategyHtml = '';
+            if (latestD === 0 && latestS === 0) strategyHtml = `<div class="card-info p-4 rounded-lg mt-4 col-span-2"> ไม่มีข้อมูลในวันที่ ${formatDateFull(latestDateStr)}</div>`;
+            else if (latestD > latestS * 1.5) strategyHtml = `<div class="card-success p-4 rounded-lg mt-4 col-span-2"><b>🛡️ ตลาดเฝ้าโต๊ะขาดแคลน:</b> D/S=${scarcityRatio.toFixed(1)}x — ดีมานด์สูง รับงานได้ราคาดี!</div>`;
+            else if (latestD > latestS) strategyHtml = `<div class="card-success p-4 rounded-lg mt-4 col-span-2"><b>🛡️ High Demand:</b> D/S=${scarcityRatio.toFixed(1)}x — ดีมานด์มากกว่าคนรับ</div>`;
+            else if (latestS > latestD * 1.5) strategyHtml = `<div class="card-error p-4 rounded-lg mt-4 col-span-2"><b>🛡️ Oversupply:</b> คนรับเฝ้าโต๊ะเยอะกว่าลูกค้า — แข่งกันรับงาน</div>`;
+            else strategyHtml = `<div class="card-warning p-4 rounded-lg mt-4 col-span-2"><b>🛡️ Balanced:</b> ตลาดสมดุล</div>`;
+
+            document.getElementById('oracle-summary').innerHTML = `
+            <div class="p-4 rounded-lg" style="background:#7c3aed22;border-left:4px solid #7c3aed;"><h4 class="font-bold mb-1" style="color:#7c3aed;">🛡️ รวม จ้างเฝ้าโต๊ะ</h4><p class="text-sm">ยอดรวมทั้งหมด: <span class="text-2xl font-bold" style="color:#7c3aed;">${totalD} ครั้ง</span></p></div>
+            <div class="p-4 rounded-lg" style="background:#06b6d422;border-left:4px solid #06b6d4;"><h4 class="font-bold mb-1" style="color:#0e7490;">🛡️ รวม รับเฝ้าโต๊ะ</h4><p class="text-sm">ยอดรวมทั้งหมด: <span class="text-2xl font-bold" style="color:#0e7490;">${totalS} ครั้ง</span></p></div>
+            ${strategyHtml}
+            <div class="col-span-2 p-3 rounded-lg text-xs" style="background:#7c3aed11;border:1px dashed #7c3aed44;color:#6d28d9;"><b>หมายเหตุ:</b> โหมดเฝ้าโต๊ะไม่มีระบบทำนาย (Oracle) — แสดงเฉพาะข้อมูลจริง</div>`;
+        }
+
         // ============================================================================
         // EDA TAB 3:  เทรนโต๊ะ — init sub-tabs
         // ============================================================================
@@ -1776,15 +2004,31 @@
             const selectedDate = document.getElementById('micro-date-picker').value;
             if (!selectedDate) return;
 
-            let dMicro = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire));
-            dMicro = deduplicate(dMicro, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
-            dMicro.forEach(r => r.Wanted_Count = parseFloat(r.Wanted_Count) || 1);
-            dMicro = dMicro.filter(r => dateOnly(r.Wanted_Table_Date) === selectedDate);
+            const isGuardMode = currentMode === 'guard';
 
-            let sMicro = dfSupply.filter(r => r.Inventory_Status === 'มีของในมือ');
-            sMicro = deduplicate(sMicro, ['Post_Date', 'Seller_Name', 'Supply_Table_Date', 'Supply_Shop'], 'last');
-            sMicro.forEach(r => r.Supply_Count = parseFloat(r.Supply_Count) || 1);
-            sMicro = sMicro.filter(r => dateOnly(r.Supply_Table_Date) === selectedDate);
+            let dMicro, sMicro;
+
+            if (isGuardMode) {
+                dMicro = dfDemand.filter(r => r.type_hire && /จ้างเฝ้าโต๊ะ/.test(r.type_hire));
+                dMicro = deduplicate(dMicro, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
+                dMicro.forEach(r => r.Wanted_Count = parseFloat(r.Wanted_Count) || 1);
+                dMicro = dMicro.filter(r => dateOnly(r.Wanted_Table_Date) === selectedDate);
+
+                sMicro = dfSupply.filter(r => r.Supply_Type === 'รับเฝ้าโต๊ะ');
+                sMicro = deduplicate(sMicro, ['Post_Date', 'Seller_Name', 'Supply_Table_Date', 'Supply_Shop'], 'last');
+                sMicro.forEach(r => r.Supply_Count = parseFloat(r.Supply_Count) || 1);
+                sMicro = sMicro.filter(r => dateOnly(r.Supply_Table_Date) === selectedDate);
+            } else {
+                dMicro = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire));
+                dMicro = deduplicate(dMicro, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
+                dMicro.forEach(r => r.Wanted_Count = parseFloat(r.Wanted_Count) || 1);
+                dMicro = dMicro.filter(r => dateOnly(r.Wanted_Table_Date) === selectedDate);
+
+                sMicro = dfSupply.filter(r => r.Inventory_Status === 'มีของในมือ');
+                sMicro = deduplicate(sMicro, ['Post_Date', 'Seller_Name', 'Supply_Table_Date', 'Supply_Shop'], 'last');
+                sMicro.forEach(r => r.Supply_Count = parseFloat(r.Supply_Count) || 1);
+                sMicro = sMicro.filter(r => dateOnly(r.Supply_Table_Date) === selectedDate);
+            }
 
             // Apply global filters on Post_Date date range
             readGlobalFilters();
@@ -1808,25 +2052,33 @@
             const cumDemand = cumSum(demandVals);
             const cumSupply = cumSum(supplyVals);
 
+            const demandLineLabel = isGuardMode ? '🛡️ จ้างเฝ้าโต๊ะ (คนต้องการ)' : ' Demand (โต๊ะที่ลูกค้าหา)';
+            const supplyLineLabel = isGuardMode ? '🛡️ รับเฝ้าโต๊ะ (คนรับ)' : ' Supply (โต๊ะที่แม่ค้าปล่อย)';
+            const chartTitleText = isGuardMode
+                ? `🛡️ เฝ้าโต๊ะวันที่ ${formatDateFull(selectedDate)} (แยกตามวันที่โพสต์)`
+                : `วอลลุ่มโต๊ะวันที่ ${formatDateFull(selectedDate)} (แยกตามวันที่โพสต์)`;
+            const demandColor = isGuardMode ? '#7c3aed' : '#D62828';
+            const supplyColor = isGuardMode ? '#06b6d4' : '#457B9D';
+
             createChart('chart-micro-daily', {
                 type: 'line',
                 data: {
                     labels, datasets: [
-                        { label: ' Demand (โต๊ะที่ลูกค้าหา)', data: demandVals, borderColor: '#D62828', borderWidth: 2.5, pointRadius: 4, tension: 0.2, fill: { target: 1, above: 'rgba(214,40,40,0.15)', below: 'rgba(69,123,157,0.15)' } },
-                        { label: ' Supply (โต๊ะที่แม่ค้าปล่อย)', data: supplyVals, borderColor: '#457B9D', borderWidth: 2.5, borderDash: [6, 3], pointRadius: 4, pointStyle: 'rect', tension: 0.2, fill: false }
+                        { label: demandLineLabel, data: demandVals, borderColor: demandColor, borderWidth: 2.5, pointRadius: 4, tension: 0.2, fill: { target: 1, above: `${demandColor}26`, below: `${supplyColor}26` } },
+                        { label: supplyLineLabel, data: supplyVals, borderColor: supplyColor, borderWidth: 2.5, borderDash: [6, 3], pointRadius: 4, pointStyle: 'rect', tension: 0.2, fill: false }
                     ]
                 },
                 options: {
-                    responsive: true, plugins: { title: { display: true, text: `วอลลุ่มโต๊ะวันที่ ${formatDateFull(selectedDate)} (แยกตามวันที่โพสต์)`, font: { size: 15, weight: 'bold', family: 'Sarabun' } } },
-                    scales: { y: { title: { display: true, text: 'ปริมาณโต๊ะ' }, beginAtZero: true }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
+                    responsive: true, plugins: { title: { display: true, text: chartTitleText, font: { size: 15, weight: 'bold', family: 'Sarabun' } } },
+                    scales: { y: { title: { display: true, text: isGuardMode ? 'ปริมาณงาน' : 'ปริมาณโต๊ะ' }, beginAtZero: true }, x: { ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } } }
                 }
             });
             createChart('chart-micro-cumulative', {
                 type: 'line',
                 data: {
                     labels, datasets: [
-                        { label: 'Demand สะสม', data: cumDemand, borderColor: '#D62828', borderWidth: 2, fill: false, tension: 0.2 },
-                        { label: 'Supply สะสม', data: cumSupply, borderColor: '#457B9D', borderWidth: 2, borderDash: [6, 3], fill: false, tension: 0.2 }
+                        { label: isGuardMode ? '🛡️ จ้างเฝ้าสะสม' : 'Demand สะสม', data: cumDemand, borderColor: demandColor, borderWidth: 2, fill: false, tension: 0.2 },
+                        { label: isGuardMode ? '🛡️ รับเฝ้าสะสม' : 'Supply สะสม', data: cumSupply, borderColor: supplyColor, borderWidth: 2, borderDash: [6, 3], fill: false, tension: 0.2 }
                     ]
                 },
                 options: {
@@ -1836,12 +2088,20 @@
             });
             const totalD = demandVals.reduce((a, b) => a + b, 0), totalS = supplyVals.reduce((a, b) => a + b, 0);
             let statusHtml = '';
-            if (totalD > totalS) statusHtml = `<div class="card-success p-4 rounded-lg"><b> สถานะ:</b> ขาดตลาด (กักตุนโก่งราคาได้)</div>`;
-            else if (totalS > totalD * 1.5) statusHtml = `<div class="card-error p-4 rounded-lg"><b> สถานะ:</b> โต๊ะล้นตลาด</div>`;
-            else statusHtml = `<div class="card-warning p-4 rounded-lg"><b> สถานะ:</b> สมดุล</div>`;
+            if (isGuardMode) {
+                if (totalD > totalS) statusHtml = `<div class="card-success p-4 rounded-lg"><b>🛡️ สถานะ:</b> ดีมานด์เฝ้าโต๊ะสูง (รับงานได้ราคาดี)</div>`;
+                else if (totalS > totalD * 1.5) statusHtml = `<div class="card-error p-4 rounded-lg"><b>🛡️ สถานะ:</b> คนรับเยอะกว่างาน</div>`;
+                else statusHtml = `<div class="card-warning p-4 rounded-lg"><b>🛡️ สถานะ:</b> สมดุล</div>`;
+            } else {
+                if (totalD > totalS) statusHtml = `<div class="card-success p-4 rounded-lg"><b> สถานะ:</b> ขาดตลาด (กักตุนโก่งราคาได้)</div>`;
+                else if (totalS > totalD * 1.5) statusHtml = `<div class="card-error p-4 rounded-lg"><b> สถานะ:</b> โต๊ะล้นตลาด</div>`;
+                else statusHtml = `<div class="card-warning p-4 rounded-lg"><b> สถานะ:</b> สมดุล</div>`;
+            }
+            const dLabel = isGuardMode ? '🛡️ จ้างเฝ้ารวม' : ' Demand รวม';
+            const sLabel = isGuardMode ? '🛡️ รับเฝ้ารวม' : ' Supply รวม';
             document.getElementById('micro-summary').innerHTML = `
-            <div class="card-info p-4 rounded-lg"><b> Demand รวม:</b><br>${totalD} โต๊ะ</div>
-            <div class="card-info p-4 rounded-lg"><b> Supply รวม:</b><br>${totalS} โต๊ะ</div>
+            <div class="card-info p-4 rounded-lg"><b>${dLabel}:</b><br>${totalD} ${isGuardMode ? 'งาน' : 'โต๊ะ'}</div>
+            <div class="card-info p-4 rounded-lg"><b>${sLabel}:</b><br>${totalS} ${isGuardMode ? 'งาน' : 'โต๊ะ'}</div>
             ${statusHtml}`;
         }
 
@@ -1850,8 +2110,16 @@
             const selectedDate = document.getElementById('rev-date-picker').value;
             if (!selectedDate) return;
 
-            let revDemand = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire));
-            revDemand = deduplicate(revDemand, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
+            const isGuardMode = currentMode === 'guard';
+
+            let revDemand;
+            if (isGuardMode) {
+                revDemand = dfDemand.filter(r => r.type_hire && /จ้างเฝ้าโต๊ะ/.test(r.type_hire));
+                revDemand = deduplicate(revDemand, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
+            } else {
+                revDemand = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire));
+                revDemand = deduplicate(revDemand, ['Post_Date', 'Customer_Name', 'Wanted_Table_Date', 'Wanted_Shop'], 'last');
+            }
             const filtered = revDemand.filter(r => dateOnly(r.Post_Date) === selectedDate);
 
             if (filtered.length === 0) {
@@ -1888,8 +2156,8 @@
                 type: 'bar',
                 data: { labels: dateLabels, datasets },
                 options: {
-                    responsive: true, plugins: { title: { display: true, text: `ปริมาณความต้องการ (โพสต์วันที่ ${selectedDate})`, font: { size: 16, weight: 'bold', family: 'Sarabun' } }, legend: { title: { display: true, text: 'ร้านเป้าหมาย' } } },
-                    scales: { x: { title: { display: true, text: 'วันที่อยากได้โต๊ะ' }, stacked: false, ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } }, y: { title: { display: true, text: 'ปริมาณโต๊ะ' }, beginAtZero: true } }
+                    responsive: true, plugins: { title: { display: true, text: isGuardMode ? `🛡️ จ้างเฝ้าโต๊ะ (โพสต์วันที่ ${selectedDate})` : `ปริมาณความต้องการ (โพสต์วันที่ ${selectedDate})`, font: { size: 16, weight: 'bold', family: 'Sarabun' } }, legend: { title: { display: true, text: 'ร้านเป้าหมาย' } } },
+                    scales: { x: { title: { display: true, text: isGuardMode ? 'วันที่ต้องการเฝ้าโต๊ะ' : 'วันที่อยากได้โต๊ะ' }, stacked: false, ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } }, y: { title: { display: true, text: isGuardMode ? 'ปริมาณงาน' : 'ปริมาณโต๊ะ' }, beginAtZero: true } }
                 }
             });
             const colsToShow = ['Post_Time', 'Customer_Name', 'Wanted_Count', 'Wanted_Shop', 'Wanted_Table_Date', 'type_hire', 'Raw_Message'];
@@ -1909,9 +2177,19 @@
             const selectedDate = document.getElementById('rt-eda-date-picker').value;
             if (!selectedDate) return;
 
-            // Same-day only (Post_Date === table date)
-            let dRt = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire) && dateOnly(r.Post_Date) === selectedDate && dateOnly(r.Wanted_Table_Date) === selectedDate);
-            let sRt = dfSupply.filter(r => r.Inventory_Status === 'มีของในมือ' && dateOnly(r.Post_Date) === selectedDate && dateOnly(r.Supply_Table_Date) === selectedDate);
+            const isGuardMode = currentMode === 'guard';
+
+            let dRt, sRt;
+
+            if (isGuardMode) {
+                // โหมดเฝ้าโต๊ะ: same-day where Post_Date === Wanted/Supply_Table_Date
+                dRt = dfDemand.filter(r => r.type_hire && /จ้างเฝ้าโต๊ะ/.test(r.type_hire) && dateOnly(r.Post_Date) === selectedDate && dateOnly(r.Wanted_Table_Date) === selectedDate);
+                sRt = dfSupply.filter(r => r.Supply_Type === 'รับเฝ้าโต๊ะ' && dateOnly(r.Post_Date) === selectedDate && dateOnly(r.Supply_Table_Date) === selectedDate);
+            } else {
+                // Same-day only (Post_Date === table date)
+                dRt = dfDemand.filter(r => r.type_hire && /หาโต๊ะ|จ้างวอร์กอิน/.test(r.type_hire) && dateOnly(r.Post_Date) === selectedDate && dateOnly(r.Wanted_Table_Date) === selectedDate);
+                sRt = dfSupply.filter(r => r.Inventory_Status === 'มีของในมือ' && dateOnly(r.Post_Date) === selectedDate && dateOnly(r.Supply_Table_Date) === selectedDate);
+            }
 
             function explodeShops(arr, shopField) {
                 const result = [];
@@ -1959,8 +2237,10 @@
                 const dData = hours.map(h => dByHour[h] || 0);
                 const sData = hours.map(h => sByHour[h] || 0);
                 const hasD = dData.some(v => v > 0), hasS = sData.some(v => v > 0);
-                if (hasD) datasets.push({ label: ` D: ${shop}`, data: dData, borderColor: color, backgroundColor: color + '22', borderWidth: 2.5, pointRadius: 4, tension: 0.2, fill: false });
-                if (hasS) datasets.push({ label: ` S: ${shop}`, data: sData, borderColor: color, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 2, pointStyle: 'rect', tension: 0.2, fill: false });
+                const dLabel = isGuardMode ? `🛡️ จ้างเฝ้า: ${shop}` : ` D: ${shop}`;
+                const sLabel = isGuardMode ? `🛡️ รับเฝ้า: ${shop}` : ` S: ${shop}`;
+                if (hasD) datasets.push({ label: dLabel, data: dData, borderColor: color, backgroundColor: color + '22', borderWidth: 2.5, pointRadius: 4, tension: 0.2, fill: false });
+                if (hasS) datasets.push({ label: sLabel, data: sData, borderColor: color, borderWidth: 1.5, borderDash: [5, 4], pointRadius: 2, pointStyle: 'rect', tension: 0.2, fill: false });
             });
 
             const wrapper = document.createElement('div');
@@ -1976,10 +2256,10 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        title: { display: true, text: `ปริมาณโต๊ะรายชั่วโมงวันที่ ${formatDateFull(selectedDate)}`, font: { size: 15, weight: 'bold', family: 'Sarabun' } },
+                        title: { display: true, text: isGuardMode ? `🛡️ เฝ้าโต๊ะรายชั่วโมงวันที่ ${formatDateFull(selectedDate)}` : `ปริมาณโต๊ะรายชั่วโมงวันที่ ${formatDateFull(selectedDate)}`, font: { size: 15, weight: 'bold', family: 'Sarabun' } },
                         legend: { position: 'bottom', labels: { font: { family: 'Sarabun' }, boxWidth: 12 } }
                     },
-                    scales: { x: { title: { display: true, text: 'ชั่วโมง' }, ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } }, y: { title: { display: true, text: 'ปริมาณโต๊ะ' }, beginAtZero: true } }
+                    scales: { x: { title: { display: true, text: 'ชั่วโมง' }, ticks: { maxRotation: 45, minRotation: 45, autoSkip: false } }, y: { title: { display: true, text: isGuardMode ? 'ปริมาณงาน' : 'ปริมาณโต๊ะ' }, beginAtZero: true } }
                 }
             });
 
@@ -1989,7 +2269,9 @@
                 const color = shopColor(idx);
                 const totalD = dRt.filter(r => r.Clean_Shop === shop).reduce((a, r) => a + (parseFloat(r.Wanted_Count) || 1), 0);
                 const totalS = sRt.filter(r => r.Clean_Shop === shop).reduce((a, r) => a + (parseFloat(r.Supply_Count) || 1), 0);
-                summaryHtml += `<div class="p-4 rounded-lg border-l-4" style="background:${color}11;border-color:${color};"><b style="color:${color};"> ${shop}</b><br><span class="text-sm"> Demand: <b>${totalD}</b> |  Supply: <b>${totalS}</b></span></div>`;
+                const dLabel = isGuardMode ? '🛡️ จ้างเฝ้า' : ' Demand';
+                const sLabel = isGuardMode ? '🛡️ รับเฝ้า' : ' Supply';
+                summaryHtml += `<div class="p-4 rounded-lg border-l-4" style="background:${color}11;border-color:${color};"><b style="color:${color};"> ${shop}</b><br><span class="text-sm">${dLabel}: <b>${totalD}</b> | ${sLabel}: <b>${totalS}</b></span></div>`;
             });
             document.getElementById('rt-eda-summary').innerHTML = summaryHtml;
         }
