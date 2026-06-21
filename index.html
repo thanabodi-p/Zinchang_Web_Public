@@ -2137,9 +2137,28 @@
                 ...sAll.map(r => dateOnly(r.Post_Date))
             ].filter(Boolean))].sort();
         
+            // Pre-compute demand totals → rank shops → assign colors by rank
+            const shopDemandTotal = {};
+            allShops.forEach(shop => {
+                shopDemandTotal[shop] = dAll.filter(r => r.Clean_Shop === shop)
+                    .reduce((a, r) => a + (parseFloat(r.Wanted_Count) || 1), 0);
+            });
+            const rankedShops = [...allShops].sort((a, b) => shopDemandTotal[b] - shopDemandTotal[a]);
+
+            // Palette sorted by hue, golden-angle step (8) to maximize contrast between adjacent ranks
+            const COLORS_BY_HUE = [
+                '#D62828','#FF6B6B','#F77F00','#F8961E','#E9C46A',
+                '#6A994E','#43AA8B','#06D6A0','#2A9D8F','#4CC9F0',
+                '#118AB2','#457B9D','#8338EC','#C77DFF','#F72585'
+            ];
+            const shopColorMap = {};
+            rankedShops.forEach((shop, rank) => {
+                shopColorMap[shop] = COLORS_BY_HUE[(rank * 8) % COLORS_BY_HUE.length];
+            });
+
             const container = document.getElementById('micro-all-shops-container');
             container.innerHTML = '';
-        
+
             if (allShops.length === 0 || allDates.length === 0) {
                 container.innerHTML = '<div class="card-warning p-4 rounded-lg">ไม่มีข้อมูลในช่วงที่กำหนด กรุณาปรับ Filter</div>';
                 return;
@@ -2181,8 +2200,8 @@
         
             // Build datasets
             const lineDatasets = [];
-            allShops.forEach((shop, idx) => {
-                const color = shopColor(idx);
+            allShops.forEach((shop) => {
+                const color = shopColorMap[shop] || shopColor(0);
                 const dShop  = dAll.filter(r => r.Clean_Shop === shop);
                 const sShop  = sAll.filter(r => r.Clean_Shop === shop);
                 const dByDate = groupBySum(dShop, r => dateOnly(r.Post_Date), 'Wanted_Count');
@@ -2239,12 +2258,6 @@
             });
         
             // ── Custom HTML legend (ขวาของกราฟ, 2 คอลัมน์ D/S, เรียงตาม demand รวม) ──
-            const shopDemandTotal = {};
-            allShops.forEach(shop => {
-                shopDemandTotal[shop] = dAll.filter(r => r.Clean_Shop === shop)
-                    .reduce((a, r) => a + (parseFloat(r.Wanted_Count) || 1), 0);
-            });
-            const rankedShops = [...allShops].sort((a, b) => shopDemandTotal[b] - shopDemandTotal[a]);
 
             function renderMicroLegend() {
                 const chart = chartInstances['chart-micro-all-shops'];
@@ -2413,7 +2426,7 @@
                 }
 
                 const labels = sorted.map(r => r.shop);
-                const colors = sorted.map(r => shopColor(Math.max(0, allShops.indexOf(r.shop))));
+                const colors = sorted.map(r => shopColorMap[r.shop] || shopColor(0));
 
                 createChart(canvasId, {
                     type: 'bar',
